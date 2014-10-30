@@ -34,13 +34,28 @@ func (m *Memory) Init() {
 	}
 }
 
+// Fetch get an opcode from memory and then return it
+func (m *Memory) Fetch() uint16 {
+	opcode := uint16(m.Memory[m.PC] << 8)
+
+	opcode += uint16(m.Memory[m.PC+1])
+	m.PC += 2
+	return opcode
+}
+
+// Iterate does one cycle of a chip8
+func (m *Memory) Iterate() {
+	//fetch
+	//decode
+	// exectue
+}
+
 // CheckInputs verify if there is a key pressed
 // and then set the Key  array accordingly
 func (m *Memory) CheckInputs() {
 	for i := range m.Key {
 		m.Key[i] = false
 	}
-	const coldef = termbox.ColorDefault
 	ev := termbox.PollEvent()
 	if ev.Type == termbox.EventKey {
 		str := string(ev.Ch)
@@ -48,41 +63,40 @@ func (m *Memory) CheckInputs() {
 			str = strings.ToLower(str)
 		}
 		switch str {
-		case "1":
-			m.Key[0] = true
-		case "2":
-			m.Key[1] = true
 		case "3":
-			m.Key[2] = true
+			m.Key[0] = true
 		case "4":
+			m.Key[1] = true
+		case "5":
+			m.Key[2] = true
+		case "6":
 			m.Key[3] = true
-		case "q":
-			m.Key[4] = true
-		case "w":
-			m.Key[5] = true
 		case "e":
-			m.Key[6] = true
+			m.Key[4] = true
 		case "r":
+			m.Key[5] = true
+		case "t":
+			m.Key[6] = true
+		case "y":
 			m.Key[7] = true
-		case "a":
-			m.Key[8] = true
-		case "s":
-			m.Key[9] = true
 		case "d":
-			m.Key[10] = true
+			m.Key[8] = true
 		case "f":
+			m.Key[9] = true
+		case "g":
+			m.Key[10] = true
+		case "h":
 			m.Key[11] = true
-		case "z":
-			m.Key[12] = true
-		case "x":
-			m.Key[13] = true
 		case "c":
-			m.Key[14] = true
+			m.Key[12] = true
 		case "v":
+			m.Key[13] = true
+		case "b":
+			m.Key[14] = true
+		case "n":
 			m.Key[15] = true
 		}
 	}
-
 }
 
 func tbprint(x, y int, fg, bg termbox.Attribute, msg string) {
@@ -90,6 +104,10 @@ func tbprint(x, y int, fg, bg termbox.Attribute, msg string) {
 		termbox.SetCell(x, y, c, fg, bg)
 		x++
 	}
+}
+
+func printKeys() {
+
 }
 func main() {
 	var mem = Memory{}
