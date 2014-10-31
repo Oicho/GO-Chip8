@@ -3,22 +3,18 @@
 package main
 
 import (
-	"strings"
 	"time"
 
 	"github.com/Oicho/GO-Chip8/chip8"
 	"github.com/Oicho/GO-Chip8/graphics"
-
 	"github.com/nsf/termbox-go"
 )
 
-func printKeys() {
-
-}
 func main() {
 	var mem = chip8.Memory{}
 	mem.Init()
-
+	mem.Screen[30][1] = true
+	mem.Screen[31][12] = true
 	const coldef = termbox.ColorDefault
 	err := termbox.Init()
 	if err != nil {
@@ -38,18 +34,12 @@ loop:
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 		select {
 		case ev := <-eventQueue:
-			str := string(ev.Ch)
-			if str >= "A" {
-				str = strings.ToLower(str)
-			}
-			graphics.Tbprint(0, 10, coldef, coldef, str)
-
-			termbox.Flush()
-
 			if ev.Type == termbox.EventKey && ev.Key == termbox.KeyEsc {
 				break loop
 			}
 		default:
+			graphics.PrintScreen(mem.Screen)
+			termbox.Flush()
 			time.Sleep(10 * time.Millisecond)
 		}
 	}
