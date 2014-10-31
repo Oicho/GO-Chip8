@@ -51,3 +51,15 @@ func SevenAddToRegister(m *Memory, opcode uint16) {
 		m.V[(opcode&0x0F00)>>16] = byte(sum)
 	}
 }
+
+// ASetAddressRegister is the ANNN opcode
+// which set the Address register I to NNN
+func ASetAddressRegister(m *Memory, opcode uint16) {
+	m.I = opcode & 0x0FFF
+}
+
+// BJumpToV0 is the BNNN
+// which jump to the address V0 + NNN
+func BJumpToV0(m *Memory, opcode uint16) {
+	m.PC = uint16(m.V[0]) + (opcode & 0x0FFF)
+}
