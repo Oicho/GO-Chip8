@@ -34,7 +34,7 @@ func (m *Memory) Init() {
 
 // Fetch get an opcode from memory and then return it
 func (m *Memory) Fetch() uint16 {
-	opcode := uint16(m.Memory[m.PC] << 8)
+	opcode := uint16(m.Memory[m.PC]) << 8
 	opcode += uint16(m.Memory[m.PC+1])
 	m.PC += 2
 	return opcode

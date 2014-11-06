@@ -1,5 +1,7 @@
 package chip8
 
+import "math/rand"
+
 // OneJumpTo is the 1NNN opcode which jump to the NNN address
 func OneJumpTo(m *Memory, opcode uint16) {
 	m.PC = opcode & 0xFFFF
@@ -46,11 +48,13 @@ func SevenAddToRegister(m *Memory, opcode uint16) {
 	if sum > 0x00FF {
 		m.VF = true
 		//TODO is this the standard behaviour ?
-		m.V[(opcode & 0x0F00)] = 0
+		m.V[(opcode & 0x0F00)] += byte(opcode & 0x00FF)
 	} else {
 		m.V[(opcode&0x0F00)>>16] = byte(sum)
 	}
 }
+
+var r = rand.New(rand.NewSource(99))
 
 // ASetAddressRegister is the ANNN opcode
 // which set the Address register I to NNN
@@ -58,8 +62,14 @@ func ASetAddressRegister(m *Memory, opcode uint16) {
 	m.I = opcode & 0x0FFF
 }
 
-// BJumpToV0 is the BNNN
+// BJumpToV0 is the BNNN opcode
 // which jump to the address V0 + NNN
 func BJumpToV0(m *Memory, opcode uint16) {
 	m.PC = uint16(m.V[0]) + (opcode & 0x0FFF)
+}
+
+// CSetToRandomNumber is the CXNN opcode
+// which set VX to a random number and NN
+func CSetToRandomNumber(m *Memory, opcode uint16) {
+	m.V[(opcode&0x0F00)>>16] = byte((opcode & 0x00FF)) & byte(r.Int63n(0x100))
 }
