@@ -18,7 +18,7 @@ type Memory struct {
 	Key        [16]bool
 	Screen     [][]bool
 	V          [16]byte
-	CallStack  [256]byte
+	CallStack  [256]uint16
 	Memory     [4096]byte
 }
 
