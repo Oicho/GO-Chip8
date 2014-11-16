@@ -12,7 +12,6 @@ type Memory struct {
 	I          uint16
 	PC         uint16
 	SP         uint16
-	VF         bool
 	DelayTimer byte
 	SoundTimer byte
 	Key        [16]bool
@@ -53,9 +52,21 @@ func (m *Memory) Iterate() {
 	// Execute
 }
 
+// WaitForInput wait for an input and then returns it
+func (m *Memory) WaitForInput() byte {
+	for {
+		b, i := m.CheckInputs()
+		if b {
+			return i
+		}
+		// TODO sleep ?
+	}
+}
+
 // CheckInputs verify if there is a key pressed
 // and then set the Key  array accordingly
-func (m *Memory) CheckInputs() {
+func (m *Memory) CheckInputs() (bool, byte) {
+
 	for i := range m.Key {
 		m.Key[i] = false
 	}
@@ -68,36 +79,53 @@ func (m *Memory) CheckInputs() {
 		switch str {
 		case "3":
 			m.Key[0] = true
+			return true, 0
 		case "4":
 			m.Key[1] = true
+			return true, 1
 		case "5":
 			m.Key[2] = true
+			return true, 2
 		case "6":
 			m.Key[3] = true
+			return true, 3
 		case "e":
 			m.Key[4] = true
+			return true, 4
 		case "r":
 			m.Key[5] = true
+			return true, 5
 		case "t":
 			m.Key[6] = true
+			return true, 6
 		case "y":
 			m.Key[7] = true
+			return true, 7
 		case "d":
 			m.Key[8] = true
+			return true, 8
 		case "f":
 			m.Key[9] = true
+			return true, 9
 		case "g":
 			m.Key[10] = true
+			return true, 10
 		case "h":
 			m.Key[11] = true
+			return true, 11
 		case "c":
 			m.Key[12] = true
+			return true, 12
 		case "v":
 			m.Key[13] = true
+			return true, 13
 		case "b":
 			m.Key[14] = true
+			return true, 14
 		case "n":
 			m.Key[15] = true
+			return true, 15
 		}
 	}
+	return false, 0
 }

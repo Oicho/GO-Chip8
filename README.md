@@ -11,6 +11,7 @@ FILL ME
 So much to do, so little time
 
 - Get 60Hz Chip 8 timer done
+- Font
 - Print user input (cf keyboard example in termbox)
 - Print screen functions
 - Main emulator function (fetch execute)
