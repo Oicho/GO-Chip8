@@ -8,9 +8,10 @@ Nothing yet =)...
 FILL ME
 
 ### TODO
-So much to do, so little time 
+So much to do, so little time
 
 - Print user input (cf keyboard example in termbox)
 - Print screen functions
 - Main emulator function (fetch execute)
 - Instructions (duh...)
+- Logger

@@ -8,6 +8,23 @@ var eightFunctionArray = make([]func(*Memory, uint16), 0xF)
 var fFunctionMap = make(map[uint16]func(*Memory, uint16))
 var r = rand.New(rand.NewSource(99))
 
+// ZeroClearScreen is 00E0 opcode
+func ZeroClearScreen(m *Memory, opcode uint16) {
+	// TODO beautify this
+	m.Screen = make([][]bool, 64)
+	for i := range m.Screen {
+		m.Screen[i] = make([]bool, 32)
+	}
+	m.PC += 2
+}
+
+// ZeroReturnFromSubRoutine is the 00EE opcode
+// which return from a subroutine
+func ZeroReturnFromSubRoutine(m *Memory, opcode uint16) {
+	m.SP--
+	m.PC = m.CallStack[m.SP]
+}
+
 // OneJumpTo is the 1NNN opcode which jump to the NNN address
 func OneJumpTo(m *Memory, opcode uint16) {
 	m.PC = opcode & 0xFFFF
@@ -78,6 +95,33 @@ func EightArithmeticOperations(m *Memory, opcode uint16) {
 	code := opcode & 0x000F
 	eightFunctionArray[code](m, opcode)
 	m.PC += 2
+}
+
+// -------------- 8XY? opcde-----------\\
+
+// EightZeroSet is the 8XY0 opcode
+func EightZeroSet(m *Memory, opcode uint16) {
+	m.V[(opcode&0x0F00)>>16] = m.V[(opcode&0x00F0)>>8]
+}
+
+// EightOneORSet is the 8XY1 opcode
+func EightOneORSet(m *Memory, opcode uint16) {
+	m.V[(opcode&0x0F00)>>16] = m.V[(opcode&0x0F00)>>16] | m.V[(opcode&0x00F0)>>8]
+}
+
+// EightThreeXORSet is the 8XY3 opcode
+func EightThreeXORSet(m *Memory, opcode uint16) {
+	m.V[(opcode&0x0F00)>>16] = m.V[(opcode&0x0F00)>>16] ^ m.V[(opcode&0x00F0)>>8]
+}
+
+// NineNeqSkip is the 9XY0 opcode
+func NineNeqSkip(m *Memory, opcode uint16) {
+	if m.V[(opcode&0x0F00)>>16] != m.V[(opcode&0x0F00)>>16] {
+		m.PC += 4
+	} else {
+		m.PC += 2
+	}
+
 }
 
 // ASetAddressRegister is the ANNN opcode
