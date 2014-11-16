@@ -8,14 +8,15 @@
 - 8XYE
 - 8XY? Doc
 - DXYN
-- EX9E
-- EXA1
-- FX07
 - FX0A
-- FX15
-- FX18
-- FX1E
+- F??? Doc
 - FX29
 - FX33
 - FX55
 - FX65
+
+###Opcode dispatcher
+- Set F??? opcodes function map
+- Set global function array
+
+###Opcode unit testing

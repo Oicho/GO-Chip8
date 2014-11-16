@@ -9,6 +9,7 @@ var fFunctionMap = make(map[uint16]func(*Memory, uint16))
 var r = rand.New(rand.NewSource(99))
 
 // ZeroClearScreen is 00E0 opcode
+// which clear the screen
 func ZeroClearScreen(m *Memory, opcode uint16) {
 	// TODO beautify this
 	m.Screen = make([][]bool, 64)
@@ -41,9 +42,10 @@ func TwoCallSubRoutine(m *Memory, opcode uint16) {
 // ThreeEqSkip is the 3XNN opcode
 // which skip the next instruction if VX equals NN
 func ThreeEqSkip(m *Memory, opcode uint16) {
-	vx := m.V[(opcode&0x0F00)>>16]
-	m.PC += 2
+	vx := m.V[(opcode&0x0F00)>>8]
 	if vx == byte(opcode&0x00FF) {
+		m.PC += 4
+	} else {
 		m.PC += 2
 	}
 }
@@ -51,9 +53,10 @@ func ThreeEqSkip(m *Memory, opcode uint16) {
 // FourNeqSkip is the 4XNN opcode
 // which skip the next instruction if VX not equals NN
 func FourNeqSkip(m *Memory, opcode uint16) {
-	vx := m.V[(opcode&0x0F00)>>16]
-	m.PC += 2
+	vx := m.V[(opcode&0x0F00)>>8]
 	if vx != byte(opcode&0x00FF) {
+		m.PC += 4
+	} else {
 		m.PC += 2
 	}
 }
@@ -61,10 +64,11 @@ func FourNeqSkip(m *Memory, opcode uint16) {
 // FiveEqSkip is the 5XY0 opcode
 // which skip the next instruction if VX not equals NN
 func FiveEqSkip(m *Memory, opcode uint16) {
-	vx := m.V[(opcode&0x0F00)>>16]
-	vy := m.V[(opcode&0x00F0)>>8]
-	m.PC += 2
+	vx := m.V[(opcode&0x0F00)>>8]
+	vy := m.V[(opcode&0x00F0)>>4]
 	if vx == vy {
+		m.PC += 4
+	} else {
 		m.PC += 2
 	}
 }
@@ -72,20 +76,20 @@ func FiveEqSkip(m *Memory, opcode uint16) {
 // SixSetRegister is the 6XNN opcode
 // which set VX to NN
 func SixSetRegister(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>16] = byte(opcode & 0x00FF)
+	m.V[(opcode&0x0F00)>>8] = byte(opcode & 0x00FF)
 	m.PC += 2
 }
 
 // SevenAddToRegister is the 7XNN opcode
 // which add NN to VX
 func SevenAddToRegister(m *Memory, opcode uint16) {
-	sum := uint16(m.V[(opcode&0x0F00)>>16]) + opcode&0x00FF
+	sum := uint16(m.V[(opcode&0x0F00)>>8]) + opcode&0x00FF
 	if sum > 0x00FF {
 		m.VF = true
 		//TODO is this the standard behaviour ?
-		m.V[(opcode & 0x0F00)] += byte(opcode & 0x00FF)
+		m.V[(opcode&0x0F00)>>8] += byte(opcode & 0x00FF)
 	} else {
-		m.V[(opcode&0x0F00)>>16] = byte(sum)
+		m.V[(opcode&0x0F00)>>8] = byte(sum)
 	}
 	m.PC += 2
 }
@@ -100,23 +104,33 @@ func EightArithmeticOperations(m *Memory, opcode uint16) {
 // -------------- 8XY? opcde-----------\\
 
 // EightZeroSet is the 8XY0 opcode
+// which sets VX to the value of VY
 func EightZeroSet(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>16] = m.V[(opcode&0x00F0)>>8]
+	m.V[(opcode&0x0F00)>>8] = m.V[(opcode&0x00F0)>>4]
 }
 
 // EightOneORSet is the 8XY1 opcode
+// which sets VX to VX OR VY
 func EightOneORSet(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>16] = m.V[(opcode&0x0F00)>>16] | m.V[(opcode&0x00F0)>>8]
+	m.V[(opcode&0x0F00)>>8] = m.V[(opcode&0x0F00)>>8] | m.V[(opcode&0x00F0)>>4]
+}
+
+// EightTwoANDSet is the 8XY2 opcode
+// which sets VX to VX AND VY
+func EightTwoANDSet(m *Memory, opcode uint16) {
+	m.V[(opcode&0x0F00)>>8] = m.V[(opcode&0x0F00)>>8] & m.V[(opcode&0x00F0)>>4]
 }
 
 // EightThreeXORSet is the 8XY3 opcode
+// which sets VX to VX XOR VY
 func EightThreeXORSet(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>16] = m.V[(opcode&0x0F00)>>16] ^ m.V[(opcode&0x00F0)>>8]
+	m.V[(opcode&0x0F00)>>8] = m.V[(opcode&0x0F00)>>8] ^ m.V[(opcode&0x00F0)>>4]
 }
 
 // NineNeqSkip is the 9XY0 opcode
+// which skips the next instruction if VX doesn't equal VY
 func NineNeqSkip(m *Memory, opcode uint16) {
-	if m.V[(opcode&0x0F00)>>16] != m.V[(opcode&0x0F00)>>16] {
+	if m.V[(opcode&0x0F00)>>8] != m.V[(opcode&0x00F0)>>4] {
 		m.PC += 4
 	} else {
 		m.PC += 2
@@ -140,12 +154,68 @@ func BJumpToV0(m *Memory, opcode uint16) {
 // CSetToRandomNumber is the CXNN opcode
 // which set VX to a random number and NN
 func CSetToRandomNumber(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>16] = byte((opcode & 0x00FF)) & byte(r.Int63n(0x100))
+	m.V[(opcode&0x0F00)>>8] = byte((opcode & 0x00FF)) & byte(r.Int63n(0x100))
 	m.PC += 2
+}
+
+// ESkipIfKeyPress is the EX9E opcode
+// which skip the next instruction if the key stored in VX is pressed
+func ESkipIfKeyPress(m *Memory, opcode uint16) {
+	if m.Key[m.V[(opcode&0x0F00)>>8]] {
+		m.PC += 4
+	} else {
+		m.PC += 2
+	}
+}
+
+// ESkipIfKeyNotPress is the EXA1 opcode
+// which skip the next instruction if the key stored in VX is not pressed
+func ESkipIfKeyNotPress(m *Memory, opcode uint16) {
+	if m.Key[m.V[(opcode&0x0F00)>>8]] {
+		m.PC += 2
+	} else {
+		m.PC += 4
+	}
 }
 
 // FUtils is the dispatcher for FNNN opcodes
 func FUtils(m *Memory, opcode uint16) {
 	fFunctionMap[opcode&0x00FF](m, opcode)
 	m.PC += 2
+}
+
+// FSetVXtoDelayTimer is the FX07 opcode
+func FSetVXtoDelayTimer(m *Memory, opcode uint16) {
+	m.V[(opcode&0x0F00)>>8] = m.DelayTimer
+}
+
+// FSetDelayTimerToVX is the FX15 opcode
+func FSetDelayTimerToVX(m *Memory, opcode uint16) {
+	m.DelayTimer = m.V[(opcode&0x0F00)>>8]
+}
+
+// FSetSoundTimerToVX is the FX18 opcode
+func FSetSoundTimerToVX(m *Memory, opcode uint16) {
+	m.SoundTimer = m.V[(opcode&0x0F00)>>8]
+}
+
+// FAddVXToI is the FX1E opcode
+func FAddVXToI(m *Memory, opcode uint16) {
+	m.I += uint16(m.V[(opcode&0x0F00)>>8])
+}
+
+// FWriteMemory is the FX55 opcode
+func FWriteMemory(m *Memory, opcode uint16) {
+	vx := (opcode & 0x0F00) >> 8
+	for p := uint16(0); p <= vx; p++ {
+		m.Memory[m.I+p] = m.V[p]
+	}
+}
+
+// FReadMemory is the FX65 opcode
+func FReadMemory(m *Memory, opcode uint16) {
+	vx := (opcode & 0x0F00) >> 8
+	for p := uint16(0); p <= vx; p++ {
+		m.V[p] = m.Memory[m.I+p]
+	}
 }
