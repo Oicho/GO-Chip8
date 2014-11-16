@@ -2,6 +2,7 @@ package chip8
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/nsf/termbox-go"
@@ -29,6 +30,30 @@ func (m *Memory) Init() {
 	for i := range m.Screen {
 		m.Screen[i] = make([]bool, 32)
 	}
+}
+
+// LoadRom load a rom in the memory
+func (m *Memory) LoadRom(filePath string) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		// TODO log
+		return err
+	}
+
+	defer file.Close()
+	data := make([]byte, 0xE00)
+	nbBytes, err := file.Read(data)
+
+	if err != nil {
+		// TODO log
+		return err
+	}
+
+	for i := 0; i < nbBytes; i++ {
+		m.Memory[i+0x200] = data[i]
+	}
+
+	return nil
 }
 
 // Fetch get an opcode from memory and then return it
