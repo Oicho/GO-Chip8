@@ -4,8 +4,9 @@ import (
 	"math/rand"
 )
 
-var eightFunctionArray = make([]func(*Memory, uint16), 0xF)
-var fFunctionMap = make(map[uint16]func(*Memory, uint16))
+var mainFunctionArray = [0x10]func(*Memory, uint16){nil}
+var eightFunctionArray = [0xF]func(*Memory, uint16){EightZeroSet, EightOneORSet, EightTwoANDSet, EightThreeXORSet, EightFourAdd, EightFiveSub, EightSixRightShift, EightSevenMinus, nil, nil, nil, nil, nil, nil, EightFourteenLeftShift}
+var fFunctionMap = map[uint16]func(*Memory, uint16){7: FSetVXtoDelayTimer, 0x0A: FWaitKeyPress}
 var r = rand.New(rand.NewSource(99))
 
 // ZeroClearScreen is 00E0 opcode

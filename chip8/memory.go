@@ -66,6 +66,7 @@ func (m *Memory) Fetch() uint16 {
 
 // Decode does stuff
 func (m *Memory) Decode(opcode uint16) {
+	// TODO call fun array
 	fmt.Println(opcode)
 }
 
