@@ -42,7 +42,7 @@ func ZeroReturnFromSubRoutine(m *Memory, opcode uint16) {
 
 // OneJumpTo is the 1NNN opcode which jump to the NNN address
 func OneJumpTo(m *Memory, opcode uint16) {
-	m.PC = opcode & 0xFFFF
+	m.PC = opcode & 0x0FFF
 }
 
 // TwoCallSubRoutine is the 2NNN opcode
@@ -65,7 +65,7 @@ func ThreeEqSkip(m *Memory, opcode uint16) {
 }
 
 // FourNeqSkip is the 4XNN opcode
-// which skip the next instruction if VX not equals NN
+// which skips the next instruction if VX not equals NN
 func FourNeqSkip(m *Memory, opcode uint16) {
 	vx := m.V[(opcode&0x0F00)>>8]
 	if vx != byte(opcode&0x00FF) {
@@ -76,7 +76,7 @@ func FourNeqSkip(m *Memory, opcode uint16) {
 }
 
 // FiveEqSkip is the 5XY0 opcode
-// which skip the next instruction if VX not equals NN
+// which skips the next instruction if VX equals VY.
 func FiveEqSkip(m *Memory, opcode uint16) {
 	vx := m.V[(opcode&0x0F00)>>8]
 	vy := m.V[(opcode&0x00F0)>>4]
@@ -242,8 +242,6 @@ func EDispatcher(m *Memory, opcode uint16) {
 // which skip the next instruction if the key stored in VX is pressed
 func ESkipIfKeyPress(m *Memory, opcode uint16) {
 	if m.Key[m.V[(opcode&0x0F00)>>8]] {
-		m.PC += 4
-	} else {
 		m.PC += 2
 	}
 }
@@ -251,10 +249,8 @@ func ESkipIfKeyPress(m *Memory, opcode uint16) {
 // ESkipIfKeyNotPress is the EXA1 opcode
 // which skip the next instruction if the key stored in VX is not pressed
 func ESkipIfKeyNotPress(m *Memory, opcode uint16) {
-	if m.Key[m.V[(opcode&0x0F00)>>8]] {
+	if !m.Key[m.V[(opcode&0x0F00)>>8]] {
 		m.PC += 2
-	} else {
-		m.PC += 4
 	}
 }
 

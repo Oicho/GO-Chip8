@@ -1,13 +1,26 @@
 ###OPCODE remaining
--DXYN
--FX29
--FX33
+- DXYN
+- FX29
+- FX33
 
 ###Opcode dispatcher
--Error handling
+- Error handling
 
 ###Opcode unit testing
--Instructions
--Dispatch
+####Instructions
+- 2???
+- 6???
+- 7???
+- 8???
+- 9???
+- A???
+- B???
+- C???
+- D???
+- E???
+- F???
+
+####Dispatch
+
 
 ###Utils

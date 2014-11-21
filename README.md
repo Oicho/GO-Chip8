@@ -10,7 +10,6 @@ FILL ME
 ### TODO
 So much to do, so little time
 
-- Font loading
 - Instructions (duh...)
 - Get 60Hz Chip 8 timer done
 - Print screen functions
