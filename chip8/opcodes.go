@@ -4,10 +4,23 @@ import (
 	"math/rand"
 )
 
-var mainFunctionArray = [0x10]func(*Memory, uint16){nil}
+// TODO Set D opcode
+var mainFunctionArray = [0x10]func(*Memory, uint16){ZeroDispatcher, OneJumpTo, TwoCallSubRoutine, ThreeEqSkip, FourNeqSkip, FiveEqSkip, SixSetRegister, SevenAddToRegister, EightDispatcher, NineNeqSkip, ASetAddressRegister, BJumpToV0, CSetToRandomNumber, DWrapsOnScreen, EDispatcher, FDispatcher}
 var eightFunctionArray = [0xF]func(*Memory, uint16){EightZeroSet, EightOneORSet, EightTwoANDSet, EightThreeXORSet, EightFourAdd, EightFiveSub, EightSixRightShift, EightSevenMinus, nil, nil, nil, nil, nil, nil, EightFourteenLeftShift}
-var fFunctionMap = map[uint16]func(*Memory, uint16){7: FSetVXtoDelayTimer, 0x0A: FWaitKeyPress}
+var fFunctionMap = map[uint16]func(*Memory, uint16){7: FSetVXtoDelayTimer, 0x0A: FWaitKeyPress, 0x15: FSetDelayTimerToVX, 0x18: FSetSoundTimerToVX, 0x1E: FAddVXToI, 0x29: FGoToSprite, 0x33: FBCD, 0x55: FWriteMemory, 0x65: FReadMemory}
 var r = rand.New(rand.NewSource(99))
+
+// ZeroDispatcher is the 0??? opcodes dispatcher
+func ZeroDispatcher(m *Memory, opcode uint16) {
+	switch opcode {
+	case 0x00E0:
+		ZeroClearScreen(m, opcode)
+	case 0x00EE:
+		ZeroReturnFromSubRoutine(m, opcode)
+	default:
+		// TODO show something funny
+	}
+}
 
 // ZeroClearScreen is 00E0 opcode
 // which clear the screen
@@ -88,8 +101,8 @@ func SevenAddToRegister(m *Memory, opcode uint16) {
 	m.PC += 2
 }
 
-// EightArithmeticOperations is the dispatcher for 8XY? opcodes
-func EightArithmeticOperations(m *Memory, opcode uint16) {
+// EightDispatcher is the dispatcher for 8XY? opcodes
+func EightDispatcher(m *Memory, opcode uint16) {
 	code := opcode & 0x000F
 	eightFunctionArray[code](m, opcode)
 	m.PC += 2
@@ -207,6 +220,24 @@ func CSetToRandomNumber(m *Memory, opcode uint16) {
 	m.PC += 2
 }
 
+// DWrapsOnScreen is the DXYN
+func DWrapsOnScreen(m *Memory, opcode uint16) {
+	// TODO Some code
+}
+
+// EDispatcher is the E??? opcodes dispatcher
+func EDispatcher(m *Memory, opcode uint16) {
+	switch opcode & 0x00FF {
+	case 0x9E:
+		ESkipIfKeyPress(m, opcode)
+	case 0xA1:
+		ESkipIfKeyNotPress(m, opcode)
+	default:
+		// TODO show error
+	}
+	m.PC += 2
+}
+
 // ESkipIfKeyPress is the EX9E opcode
 // which skip the next instruction if the key stored in VX is pressed
 func ESkipIfKeyPress(m *Memory, opcode uint16) {
@@ -227,8 +258,8 @@ func ESkipIfKeyNotPress(m *Memory, opcode uint16) {
 	}
 }
 
-// FUtils is the dispatcher for FNNN opcodes
-func FUtils(m *Memory, opcode uint16) {
+// FDispatcher is the dispatcher for FNNN opcodes
+func FDispatcher(m *Memory, opcode uint16) {
 	fFunctionMap[opcode&0x00FF](m, opcode)
 	m.PC += 2
 }
@@ -261,6 +292,21 @@ func FSetSoundTimerToVX(m *Memory, opcode uint16) {
 // which adds VX to I
 func FAddVXToI(m *Memory, opcode uint16) {
 	m.I += uint16(m.V[(opcode&0x0F00)>>8])
+}
+
+// FGoToSprite is the FX29 opcode
+// which sets I to the location of the sprite for the character in VX
+func FGoToSprite(m *Memory, opcode uint16) {
+	// TODO code me
+}
+
+// FBCD is the FX33 opcode
+// which stores the Binary-coded decimal representation of VX,
+// with the most significant of three digits at the address in I,
+// the middle digit at I plus 1,
+// and the least significant digit at I plus 2.
+func FBCD(m *Memory, opcode uint16) {
+	// TODO code me
 }
 
 // FWriteMemory is the FX55 opcode
