@@ -20,7 +20,5 @@
 
 ###Utils
 - LoadRom
-- Init
 - Fetch
 - Decode
-###Utils
