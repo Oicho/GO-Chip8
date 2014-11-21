@@ -211,6 +211,9 @@ func ASetAddressRegister(m *Memory, opcode uint16) {
 // which jump to the address V0 + NNN
 func BJumpToV0(m *Memory, opcode uint16) {
 	m.PC = uint16(m.V[0]) + (opcode & 0x0FFF)
+	if m.PC >= 0x1000 {
+		m.PC = m.PC - 0x1000
+	}
 }
 
 // CSetToRandomNumber is the CXNN opcode

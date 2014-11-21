@@ -57,7 +57,7 @@ func (m *Memory) Init() {
 func (m *Memory) LoadRom(filePath string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
-		// TODO log
+		// TODO log or panic
 		return err
 	}
 
@@ -81,7 +81,7 @@ func (m *Memory) LoadRom(filePath string) error {
 func (m *Memory) Fetch() uint16 {
 	opcode := uint16(m.Memory[m.PC]) << 8
 	opcode += uint16(m.Memory[m.PC+1])
-
+	// TODO out of bound ?
 	return opcode
 }
 
