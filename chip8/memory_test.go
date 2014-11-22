@@ -1,8 +1,9 @@
 package chip8
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
@@ -49,4 +50,11 @@ func TestLoadRom_Bigfile(t *testing.T) {
 	// TODO find file
 	// err := m.LoadRom("not_found.c8")
 	// assert.Nil(t, err, "No error raised")
+}
+
+func TestFetch(t *testing.T) {
+	m := createBasicMem()
+	m.Memory[m.PC] = 0x01
+	m.Memory[m.PC+1] = 0x23
+	assert.Equal(t, uint16(0x0123), m.Fetch(), "Simple opcode fetching")
 }
