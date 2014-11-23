@@ -12,7 +12,7 @@ var eightFunctionArray = [0xF]func(*Memory, uint16){EightZeroSet, EightOneORSet,
 var fFunctionMap = map[uint16]func(*Memory, uint16){7: FSetVXtoDelayTimer, 0x0A: FWaitKeyPress, 0x15: FSetDelayTimerToVX, 0x18: FSetSoundTimerToVX, 0x1E: FAddVXToI, 0x29: FGoToSprite, 0x33: FBCD, 0x55: FWriteMemory, 0x65: FReadMemory}
 var r = rand.New(rand.NewSource(99))
 
-// Dispatch blabla
+// Dispatch is the da func
 func Dispatch(m *Memory, opcode uint16) {
 	mainFunctionArray[(0xF000&opcode)>>12](m, opcode)
 }
@@ -232,22 +232,27 @@ func CSetToRandomNumber(m *Memory, opcode uint16) {
 	m.PC += 2
 }
 
-// DWrapsOnScreen is the DXYN
+// DWrapsOnScreen is the DXYN opcode
+// which draw sprites
 func DWrapsOnScreen(m *Memory, opcode uint16) {
 	x, y := xyExtractor(opcode)
+	vx := uint16(m.V[x])
+	vy := uint16(m.V[y])
 	height := 0x000F & opcode
 	m.V[0xF] = 0
 	for py := uint16(0); py < height; py++ {
 		pixel := m.Memory[m.I+py]
 		for px := uint16(0); px < 8; px++ {
 			if (pixel & (0x80 >> px)) != 0 {
-				m.V[0xF] = 1
-				m.Screen[px+x][py+y] = !m.Screen[px+x][py+y]
+				if m.Screen[px+vx][py+vy] {
+					m.V[0xF] = 1
+				}
+				m.Screen[px+vx][py+vy] = !m.Screen[px+vx][py+vy]
 			}
 		}
 	}
 	graphics.PrintScreen(m.Screen)
-	// TODO Draw Screen
+	m.PC += 2
 }
 
 // EDispatcher is the E??? opcodes dispatcher

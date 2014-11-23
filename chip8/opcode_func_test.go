@@ -1,6 +1,7 @@
 package chip8
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -376,6 +377,40 @@ func TestCXNN(t *testing.T) {
 	// Assert
 	assert.Equal(t, uint16(0x202), m.PC, "Move PC")
 	assert.Equal(t, 0, m.V[0xF], "And operator")
+}
+
+func TestDXYNN_noHeight(t *testing.T) {
+	// Adapt
+	m := createBasicMem()
+
+	// Act
+	Dispatch(m, 0xD230)
+
+	//	Assert
+	for x, superArr := range m.Screen {
+		for y, b := range superArr {
+			assert.False(t, b, "Pixel at x:"+strconv.Itoa(x)+", y:"+strconv.Itoa(y)+" modified")
+		}
+	}
+	assert.Equal(t, uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func TestDXYNN_emptySprites(t *testing.T) {
+	// Adapt
+	m := createBasicMem()
+	// empty memory
+	m.I = 0x300
+
+	// Act
+	Dispatch(m, 0xD23F)
+
+	//	Assert
+	for x, superArr := range m.Screen {
+		for y, b := range superArr {
+			assert.False(t, b, "Pixel at x:"+strconv.Itoa(x)+", y:"+strconv.Itoa(y)+" modified")
+		}
+	}
+	assert.Equal(t, uint16(0x202), m.PC, "Move to the next instruction")
 }
 
 func TestENNN(t *testing.T) {
