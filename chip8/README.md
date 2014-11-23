@@ -1,8 +1,3 @@
-###OPCODE remaining
-- DXYN
-- FX29
-- FX33
-
 ###Opcode dispatcher
 - Error handling
 

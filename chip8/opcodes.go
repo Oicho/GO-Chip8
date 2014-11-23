@@ -2,6 +2,8 @@ package chip8
 
 import (
 	"math/rand"
+
+	"github.com/Oicho/GO-Chip8/graphics"
 )
 
 // TODO Set D opcode
@@ -31,11 +33,12 @@ func ZeroDispatcher(m *Memory, opcode uint16) {
 // ZeroClearScreen is 00E0 opcode
 // which clear the screen
 func ZeroClearScreen(m *Memory, opcode uint16) {
-	// TODO beautify this
-	m.Screen = make([][]bool, 64)
-	for i := range m.Screen {
-		m.Screen[i] = make([]bool, 32)
+	for i, arr := range m.Screen {
+		for j := range arr {
+			m.Screen[i][j] = false
+		}
 	}
+	graphics.PrintScreen(m.Screen)
 	m.PC += 2
 }
 
@@ -231,7 +234,20 @@ func CSetToRandomNumber(m *Memory, opcode uint16) {
 
 // DWrapsOnScreen is the DXYN
 func DWrapsOnScreen(m *Memory, opcode uint16) {
-	// TODO Some code
+	x, y := xyExtractor(opcode)
+	height := 0x000F & opcode
+	m.V[0xF] = 0
+	for py := uint16(0); py < height; py++ {
+		pixel := m.Memory[m.I+py]
+		for px := uint16(0); px < 8; px++ {
+			if (pixel & (0x80 >> px)) != 0 {
+				m.V[0xF] = 1
+				m.Screen[px+x][py+y] = !m.Screen[px+x][py+y]
+			}
+		}
+	}
+	graphics.PrintScreen(m.Screen)
+	// TODO Draw Screen
 }
 
 // EDispatcher is the E??? opcodes dispatcher
@@ -302,7 +318,7 @@ func FAddVXToI(m *Memory, opcode uint16) {
 // FGoToSprite is the FX29 opcode
 // which sets I to the location of the sprite for the character in VX
 func FGoToSprite(m *Memory, opcode uint16) {
-	// TODO code me
+	m.I = uint16(5) * uint16(m.V[(0x0F00&opcode)>>8])
 }
 
 // FBCD is the FX33 opcode
@@ -311,7 +327,10 @@ func FGoToSprite(m *Memory, opcode uint16) {
 // the middle digit at I plus 1,
 // and the least significant digit at I plus 2.
 func FBCD(m *Memory, opcode uint16) {
-	// TODO code me
+	vx := m.V[(0x0F00&opcode)>>8]
+	m.Memory[m.I] = vx / 100
+	m.Memory[m.I+1] = (vx / 10) % 10
+	m.Memory[m.I+2] = (vx % 100) % 10
 }
 
 // FWriteMemory is the FX55 opcode
