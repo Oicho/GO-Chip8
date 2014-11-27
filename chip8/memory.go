@@ -1,7 +1,6 @@
 package chip8
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -87,16 +86,13 @@ func (m *Memory) Fetch() uint16 {
 
 // Decode does stuff
 func (m *Memory) Decode(opcode uint16) {
-	// TODO call fun array
-	fmt.Println(opcode)
+	mainFunctionArray[(0xF000&opcode)>>12](m, opcode)
 }
 
 // Iterate does one cycle of a chip8
 func (m *Memory) Iterate() {
 	opcode := m.Fetch()
 	m.Decode(opcode)
-	// Decode
-	// Execute
 }
 
 // WaitForInput wait for an input and then returns it

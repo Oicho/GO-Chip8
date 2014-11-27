@@ -1,9 +1,9 @@
 package chip8
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
 )
 
 func TestInit(t *testing.T) {
@@ -39,10 +39,26 @@ func TestLoadRom_BadPath(t *testing.T) {
 }
 
 func TestLoadRom_Goodfile(t *testing.T) {
-	// m := createBasicMem()
-	// TODO find file
-	// err := m.LoadRom("not_found.c8")
-	// assert.Nil(t, err, "No error raised")
+	// Adapt
+	m := createBasicMem()
+
+	// Act
+	err := m.LoadRom("../rom/TICTAC")
+
+	// Assert
+	assert.Nil(t, err, "Error raised")
+	file, _ := os.Open("../rom/TICTAC")
+	defer file.Close()
+	data := make([]byte, 0xE00)
+	nbBytes, _ := file.Read(data)
+	i := 0
+	for ; i < nbBytes; i++ {
+		assert.Equal(t, data[i], m.Memory[i+0x200])
+	}
+	for ; i < 4096-0x200; i++ {
+		assert.Equal(t, 0, m.Memory[i+0x200])
+	}
+
 }
 
 func TestLoadRom_Bigfile(t *testing.T) {

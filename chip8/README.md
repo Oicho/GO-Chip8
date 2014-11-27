@@ -2,7 +2,7 @@
 - Error handling
 
 ###Utils
-vx vy extravtor
+vx vy extractor
 
 ###Testing
 ####Instructions
