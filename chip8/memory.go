@@ -56,7 +56,7 @@ var chip8Fontset = [80]byte{
 // Init must be called when right after you create a Memory variable
 // it initialize the screen array and set some values
 func (m *Memory) Init() {
-	myLogger.Info.Println("Initiating a chip8")
+	myLogger.InfoPrint("Initiating a chip8")
 	for i := 0; i < 80; i++ {
 		m.Memory[i] = chip8Fontset[i]
 	}
@@ -65,15 +65,15 @@ func (m *Memory) Init() {
 	for i := range m.Screen {
 		m.Screen[i] = make([]bool, 32)
 	}
-	myLogger.Info.Println("Finished init chip8")
+	myLogger.InfoPrint("Finished init chip8")
 }
 
 // LoadRom load a rom in the memory
 func (m *Memory) LoadRom(filePath string) error {
-	myLogger.Info.Println("Loading a ROM")
+	myLogger.InfoPrint("Loading a ROM")
 	file, err := os.Open(filePath)
 	if err != nil {
-		myLogger.Error.Println("file:<" + filePath + "> not found")
+		myLogger.ErrorPrint("file:<" + filePath + "> not found")
 		return err
 	}
 
@@ -82,13 +82,13 @@ func (m *Memory) LoadRom(filePath string) error {
 	nbBytes, err := file.Read(data)
 
 	if err != nil {
-		myLogger.Error.Println("Couldn't read the file")
+		myLogger.ErrorPrint("Couldn't read the file")
 		return err
 	}
 	for i := 0; i < nbBytes; i++ {
 		m.Memory[i+0x200] = data[i]
 	}
-	myLogger.Info.Println("ROM loading done")
+	myLogger.InfoPrint("ROM loading done")
 	return nil
 }
 
@@ -106,6 +106,7 @@ func (m *Memory) Decode(opcode uint16) {
 
 // Iterate does one cycle of a chip8
 func (m *Memory) Iterate() {
+	myLogger.InfoVerbosePrint("Iteration")
 	opcode := m.Fetch()
 	m.Decode(opcode)
 }

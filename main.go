@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	myLogger.Init()
+	myLogger.Init(true)
 	var mem = chip8.Memory{}
 	mem.Init()
 	mem.Screen[30][1] = true
@@ -19,6 +19,7 @@ func main() {
 	const coldef = termbox.ColorDefault
 	err := termbox.Init()
 	mem.LoadRom("./rom/IBM")
+	skip := true
 	if err != nil {
 		panic(err)
 	}
@@ -39,9 +40,14 @@ loop:
 			if ev.Type == termbox.EventKey && ev.Key == termbox.KeyEsc {
 				break loop
 			}
+			if ev.Type == termbox.EventKey && ev.Key == termbox.KeySpace {
+				skip = !skip
+			}
 		default:
-			mem.Iterate()
-			time.Sleep(10 * time.Millisecond)
+			if skip {
+				mem.Iterate()
+				time.Sleep(10 * time.Millisecond)
+			}
 		}
 	}
 }
