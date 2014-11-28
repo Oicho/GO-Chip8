@@ -12,11 +12,6 @@ var eightFunctionArray = [0xF]func(*Memory, uint16){EightZeroSet, EightOneORSet,
 var fFunctionMap = map[uint16]func(*Memory, uint16){7: FSetVXtoDelayTimer, 0x0A: FWaitKeyPress, 0x15: FSetDelayTimerToVX, 0x18: FSetSoundTimerToVX, 0x1E: FAddVXToI, 0x29: FGoToSprite, 0x33: FBCD, 0x55: FWriteMemory, 0x65: FReadMemory}
 var r = rand.New(rand.NewSource(99))
 
-// Dispatch is the da func
-func Dispatch(m *Memory, opcode uint16) {
-	mainFunctionArray[(0xF000&opcode)>>12](m, opcode)
-}
-
 // ZeroDispatcher is the 0??? opcodes dispatcher
 func ZeroDispatcher(m *Memory, opcode uint16) {
 	switch opcode {

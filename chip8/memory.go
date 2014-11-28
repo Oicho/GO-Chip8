@@ -1,10 +1,9 @@
 package chip8
 
 import (
+	"github.com/nsf/termbox-go"
 	"os"
 	"strings"
-
-	"github.com/nsf/termbox-go"
 )
 
 // Memory represents the internal memory of the CHIP-8 emulator

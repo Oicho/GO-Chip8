@@ -11,6 +11,11 @@ import (
 )
 
 func main() {
+	chip8.As()
+	chip8.As()
+	chip8.As()
+	chip8.As()
+	chip8.As()
 	var mem = chip8.Memory{}
 	mem.Init()
 	mem.Screen[30][1] = true

@@ -53,19 +53,12 @@ func TestLoadRom_Goodfile(t *testing.T) {
 	nbBytes, _ := file.Read(data)
 	i := 0
 	for ; i < nbBytes; i++ {
-		assert.Equal(t, data[i], m.Memory[i+0x200])
+		assert.Equal(t, data[i], m.Memory[i+0x200], "Should load Rom data")
 	}
-	for ; i < 4096-0x200; i++ {
-		assert.Equal(t, 0, m.Memory[i+0x200])
+	for ; i < 0xE00; i++ {
+		assert.Equal(t, 0, m.Memory[i+0x200], "Should be null")
 	}
 
-}
-
-func TestLoadRom_Bigfile(t *testing.T) {
-	// m := createBasicMem()
-	// TODO find file
-	// err := m.LoadRom("not_found.c8")
-	// assert.Nil(t, err, "No error raised")
 }
 
 func TestFetch(t *testing.T) {
