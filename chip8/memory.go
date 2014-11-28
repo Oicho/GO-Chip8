@@ -1,6 +1,8 @@
 package chip8
 
 import (
+	// "fmt"
+	"github.com/Oicho/GO-Chip8/myLogger"
 	"github.com/nsf/termbox-go"
 	"os"
 	"strings"
@@ -38,9 +40,23 @@ var chip8Fontset = [80]byte{
 	0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
 	0xF0, 0x80, 0xF0, 0x80, 0x80} // F
 
+// // As suck
+// func As() {
+// 	fmt.Println(logpath)
+// 	aa, err := os.Open(logpath)
+// 	if err != nil {
+// 		fmt.Println("fail")
+// 		return
+// 	}
+// 	var logger = log.New(aa, "logger: ", log.Lshortfile)
+// 	logger.Print(" asd")
+// 	aa.Close()
+// }
+
 // Init must be called when right after you create a Memory variable
 // it initialize the screen array and set some values
 func (m *Memory) Init() {
+	myLogger.Info.Println("Initiating a chip8")
 	for i := 0; i < 80; i++ {
 		m.Memory[i] = chip8Fontset[i]
 	}
@@ -49,13 +65,15 @@ func (m *Memory) Init() {
 	for i := range m.Screen {
 		m.Screen[i] = make([]bool, 32)
 	}
+	myLogger.Info.Println("Finished init chip8")
 }
 
 // LoadRom load a rom in the memory
 func (m *Memory) LoadRom(filePath string) error {
+	myLogger.Info.Println("Loading a ROM")
 	file, err := os.Open(filePath)
 	if err != nil {
-		// TODO log or panic
+		myLogger.Error.Println("file:<" + filePath + "> not found")
 		return err
 	}
 
@@ -64,14 +82,13 @@ func (m *Memory) LoadRom(filePath string) error {
 	nbBytes, err := file.Read(data)
 
 	if err != nil {
-		// TODO log
+		myLogger.Error.Println("Couldn't read the file")
 		return err
 	}
-
 	for i := 0; i < nbBytes; i++ {
 		m.Memory[i+0x200] = data[i]
 	}
-
+	myLogger.Info.Println("ROM loading done")
 	return nil
 }
 
@@ -79,7 +96,6 @@ func (m *Memory) LoadRom(filePath string) error {
 func (m *Memory) Fetch() uint16 {
 	opcode := uint16(m.Memory[m.PC]) << 8
 	opcode += uint16(m.Memory[m.PC+1])
-	// TODO out of bound ?
 	return opcode
 }
 
@@ -108,7 +124,6 @@ func (m *Memory) WaitForInput() byte {
 // CheckInputs verify if there is a key pressed
 // and then set the Key  array accordingly
 func (m *Memory) CheckInputs() (bool, byte) {
-
 	for i := range m.Key {
 		m.Key[i] = false
 	}

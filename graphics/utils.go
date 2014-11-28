@@ -24,4 +24,5 @@ func PrintScreen(screen [][]bool) {
 		}
 		point++
 	}
+	termbox.Flush()
 }
