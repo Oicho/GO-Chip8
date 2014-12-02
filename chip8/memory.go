@@ -5,6 +5,7 @@ import (
 	"github.com/Oicho/GO-Chip8/myLogger"
 	"github.com/nsf/termbox-go"
 	"os"
+	// "strconv"
 	"strings"
 )
 
@@ -106,8 +107,9 @@ func (m *Memory) Decode(opcode uint16) {
 
 // Iterate does one cycle of a chip8
 func (m *Memory) Iterate() {
-	myLogger.InfoVerbosePrint("Iteration")
+	myLogger.InfoVerbosePrint("Fetching at " + myLogger.Uint16ToString(m.PC))
 	opcode := m.Fetch()
+	myLogger.Info.Println("Executing ", myLogger.Uint16ToString(opcode))
 	m.Decode(opcode)
 }
 
