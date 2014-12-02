@@ -83,13 +83,14 @@ func Uint16ToString(i uint16) string {
 }
 
 // Init Initialize the logger output and set the verbose flag
-func Init(b bool) {
+func Init(b bool) error {
 	verbose = b
 	var logpath = os.Getenv("GOPATH") + "/src/github.com/Oicho/GO-Chip8/log/GO-Chip8.out"
+	os.Remove(logpath)
 	f, err := os.OpenFile(logpath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("log Failed")
-		return
+		return err
 	}
 	Trace = log.New(f,
 		"TRACE: ",
@@ -106,4 +107,5 @@ func Init(b bool) {
 	Error = log.New(f,
 		"ERROR: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
+	return nil
 }
