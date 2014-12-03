@@ -3,6 +3,7 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Oicho/GO-Chip8/chip8"
@@ -14,17 +15,14 @@ func main() {
 	myLogger.Init(true)
 	var mem = chip8.Memory{}
 	mem.Init()
-	mem.Screen[30][1] = true
-	mem.Screen[31][2] = true
 	const coldef = termbox.ColorDefault
 	err := termbox.Init()
 	mem.LoadRom("./rom/IBM")
-	skip := true
+	pause := false
 	if err != nil {
 		panic(err)
 	}
 	defer termbox.Close()
-
 	eventQueue := make(chan termbox.Event)
 	go func() {
 		for {
@@ -41,10 +39,27 @@ loop:
 				break loop
 			}
 			if ev.Type == termbox.EventKey && ev.Key == termbox.KeySpace {
-				skip = !skip
+				pause = !pause
+			}
+			if ev.Type == termbox.EventKey {
+				str := string(ev.Ch)
+				if str >= "A" {
+					str = strings.ToLower(str)
+				}
+				switch str {
+				case "s":
+					myLogger.WarningPrint("Now in step by step mode")
+					mem.Iterate()
+					break
+				case "a":
+					myLogger.InfoPrint("Reloading/pausing emulator")
+					mem.Init()
+					mem.LoadRom("./rom/IBM")
+					pause = true
+				}
 			}
 		default:
-			if skip {
+			if !pause {
 				mem.Iterate()
 				time.Sleep(10 * time.Millisecond)
 			}
