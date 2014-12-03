@@ -86,7 +86,6 @@ func Uint16ToString(i uint16) string {
 func Init(b bool) error {
 	verbose = b
 	var logpath = os.Getenv("GOPATH") + "/src/github.com/Oicho/GO-Chip8/log/GO-Chip8.out"
-	os.Remove(logpath)
 	f, err := os.OpenFile(logpath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("log Failed")

@@ -17,7 +17,8 @@ func main() {
 	mem.Init()
 	const coldef = termbox.ColorDefault
 	err := termbox.Init()
-	mem.LoadRom("./rom/IBM")
+	romPath := "./rom/MAZE"
+	mem.LoadRom(romPath)
 	pause := false
 	if err != nil {
 		panic(err)
@@ -54,8 +55,12 @@ loop:
 				case "a":
 					myLogger.InfoPrint("Reloading/pausing emulator")
 					mem.Init()
-					mem.LoadRom("./rom/IBM")
+					mem.LoadRom(romPath)
 					pause = true
+					break
+				case "q":
+					myLogger.InfoPrint("Dump")
+					break
 				}
 			}
 		default:
