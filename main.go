@@ -18,7 +18,7 @@ func main() {
 	mem.Init()
 	const coldef = termbox.ColorDefault
 	err := termbox.Init()
-	romPath := "./rom/MAZE"
+	romPath := "./rom/IBM"
 	mem.LoadRom(romPath)
 	pause := false
 	if err != nil {
@@ -51,8 +51,9 @@ loop:
 				switch str {
 				case "s":
 					myLogger.WarningPrint("Now in step by step mode")
-					mem.PrintMemoryValues()
 					mem.Iterate()
+					mem.PrintMemoryValues()
+					termbox.Flush()
 					break
 				case "a":
 					myLogger.InfoPrint("Reloading/pausing emulator")

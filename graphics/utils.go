@@ -26,5 +26,4 @@ func PrintScreen(screen [][]bool) {
 		}
 		point++
 	}
-
 }

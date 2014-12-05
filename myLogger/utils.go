@@ -97,18 +97,18 @@ func Init(b bool) error {
 	}
 	Trace = log.New(f,
 		"TRACE: ",
-		log.Ldate|log.Ltime|log.Lshortfile)
+		log.Ltime|log.Lshortfile)
 
 	Info = log.New(f,
 		"INFO: ",
-		log.Ldate|log.Ltime|log.Lshortfile)
+		log.Ltime|log.Lshortfile)
 
 	Warning = log.New(f,
 		"WARNING: ",
-		log.Ldate|log.Ltime|log.Lshortfile)
+		log.Ltime|log.Lshortfile)
 
 	Error = log.New(f,
 		"ERROR: ",
-		log.Ldate|log.Ltime|log.Lshortfile)
+		log.Ltime|log.Lshortfile)
 	return nil
 }
