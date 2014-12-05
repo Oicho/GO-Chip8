@@ -8,6 +8,7 @@ import (
 
 	"github.com/Oicho/GO-Chip8/chip8"
 	"github.com/Oicho/GO-Chip8/myLogger"
+
 	"github.com/nsf/termbox-go"
 )
 
@@ -50,13 +51,16 @@ loop:
 				switch str {
 				case "s":
 					myLogger.WarningPrint("Now in step by step mode")
+					mem.PrintMemoryValues()
 					mem.Iterate()
 					break
 				case "a":
 					myLogger.InfoPrint("Reloading/pausing emulator")
+					mem = chip8.Memory{}
 					mem.Init()
 					mem.LoadRom(romPath)
 					pause = true
+					termbox.Flush()
 					break
 				case "q":
 					myLogger.InfoPrint("Dump")
@@ -66,6 +70,8 @@ loop:
 		default:
 			if !pause {
 				mem.Iterate()
+				mem.PrintMemoryValues()
+				termbox.Flush()
 				time.Sleep(10 * time.Millisecond)
 			}
 		}

@@ -2,10 +2,11 @@ package chip8
 
 import (
 	// "fmt"
+	"github.com/Oicho/GO-Chip8/graphics"
 	"github.com/Oicho/GO-Chip8/myLogger"
 	"github.com/nsf/termbox-go"
 	"os"
-	// "strconv"
+	"strconv"
 	"strings"
 )
 
@@ -40,19 +41,6 @@ var chip8Fontset = [80]byte{
 	0xE0, 0x90, 0x90, 0x90, 0xE0, // D
 	0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
 	0xF0, 0x80, 0xF0, 0x80, 0x80} // F
-
-// // As suck
-// func As() {
-// 	fmt.Println(logpath)
-// 	aa, err := os.Open(logpath)
-// 	if err != nil {
-// 		fmt.Println("fail")
-// 		return
-// 	}
-// 	var logger = log.New(aa, "logger: ", log.Lshortfile)
-// 	logger.Print(" asd")
-// 	aa.Close()
-// }
 
 // Init must be called when right after you create a Memory variable
 // it initialize the screen array and set some values
@@ -188,4 +176,32 @@ func (m *Memory) CheckInputs() (bool, byte) {
 		}
 	}
 	return false, 0
+}
+
+func (m *Memory) PrintMemoryValues() {
+	graphics.PrintScreen(m.Screen)
+	height := 0
+	width := 130
+	graphics.PrintString(width,
+		height,
+		termbox.ColorDefault,
+		termbox.ColorDefault,
+		"PC="+myLogger.Uint16ToString(m.PC))
+	height++
+	graphics.PrintString(width,
+		height,
+		termbox.ColorDefault,
+		termbox.ColorDefault,
+		"I="+myLogger.Uint16ToString(m.I))
+	height++
+	for i := 0; i < 0x10; i++ {
+		graphics.PrintString(width,
+			height,
+			termbox.ColorDefault,
+			termbox.ColorDefault,
+			"V["+strconv.Itoa(i)+"]="+myLogger.ByteToString(m.V[i]))
+		height++
+		//
+	}
+
 }

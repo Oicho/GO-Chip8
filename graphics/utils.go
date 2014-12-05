@@ -1,6 +1,8 @@
 package graphics
 
-import "github.com/nsf/termbox-go"
+import (
+	"github.com/nsf/termbox-go"
+)
 
 // PrintString print the given msg starting at the position x and y
 // fg is the Text color
@@ -24,5 +26,5 @@ func PrintScreen(screen [][]bool) {
 		}
 		point++
 	}
-	termbox.Flush()
+
 }

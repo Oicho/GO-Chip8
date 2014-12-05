@@ -76,9 +76,13 @@ func ErrorPrint(s string) {
 
 // Uint16ToString convert a uint16 to its hexadecimal representation
 func Uint16ToString(i uint16) string {
-	bArr := make([]byte, 2)
-	bArr[0] = byte(i >> 8)
-	bArr[1] = byte(i & 0x00FF)
+	bArr := []byte{byte(i >> 8), byte(i & 0x00FF)}
+	return hex.EncodeToString(bArr)
+}
+
+// ByteToString convert a uint16 to its hexadecimal representation
+func ByteToString(i byte) string {
+	bArr := []byte{i}
 	return hex.EncodeToString(bArr)
 }
 
