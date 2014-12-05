@@ -178,6 +178,7 @@ func (m *Memory) CheckInputs() (bool, byte) {
 	return false, 0
 }
 
+// PrintMemoryValues print chip8 state value
 func (m *Memory) PrintMemoryValues() {
 	graphics.PrintScreen(m.Screen)
 	height := 0
@@ -201,7 +202,6 @@ func (m *Memory) PrintMemoryValues() {
 			termbox.ColorDefault,
 			"V["+strconv.Itoa(i)+"]="+myLogger.ByteToString(m.V[i]))
 		height++
-		//
 	}
 
 }
