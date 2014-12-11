@@ -5,7 +5,7 @@ package main
 import (
 	"github.com/Oicho/GO-Chip8/chip8"
 	"github.com/Oicho/GO-Chip8/myLogger"
-	"github.com/nsf/termbox-go"
+	termbox "github.com/nsf/termbox-go"
 
 	"fmt"
 	"os"
@@ -21,7 +21,7 @@ func main() {
 	myLogger.Init(true)
 	var mem = chip8.Memory{}
 	mem.Init()
-	const coldef = termbox.ColorDefault
+
 	err := termbox.Init()
 	romPath := os.Args[1]
 	mem.LoadRom(romPath)

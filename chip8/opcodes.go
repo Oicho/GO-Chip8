@@ -6,7 +6,6 @@ import (
 	"github.com/Oicho/GO-Chip8/graphics"
 )
 
-// TODO Set D opcode
 var mainFunctionArray = [0x10]func(*Memory, uint16){ZeroDispatcher, OneJumpTo, TwoCallSubRoutine, ThreeEqSkip, FourNeqSkip, FiveEqSkip, SixSetRegister, SevenAddToRegister, EightDispatcher, NineNeqSkip, ASetAddressRegister, BJumpToV0, CSetToRandomNumber, DWrapsOnScreen, EDispatcher, FDispatcher}
 var eightFunctionArray = [0xF]func(*Memory, uint16){EightZeroSet, EightOneORSet, EightTwoANDSet, EightThreeXORSet, EightFourAdd, EightFiveSub, EightSixRightShift, EightSevenMinus, nil, nil, nil, nil, nil, nil, EightFourteenLeftShift}
 var fFunctionMap = map[uint16]func(*Memory, uint16){7: FSetVXtoDelayTimer, 0x0A: FWaitKeyPress, 0x15: FSetDelayTimerToVX, 0x18: FSetSoundTimerToVX, 0x1E: FAddVXToI, 0x29: FGoToSprite, 0x33: FBCD, 0x55: FWriteMemory, 0x65: FReadMemory}

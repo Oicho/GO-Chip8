@@ -76,14 +76,12 @@ func ErrorPrint(s string) {
 
 // Uint16ToString convert a uint16 to its hexadecimal representation
 func Uint16ToString(i uint16) string {
-	bArr := []byte{byte(i >> 8), byte(i & 0x00FF)}
-	return hex.EncodeToString(bArr)
+	return hex.EncodeToString([]byte{byte(i >> 8), byte(i & 0x00FF)})
 }
 
 // ByteToString convert a uint16 to its hexadecimal representation
 func ByteToString(i byte) string {
-	bArr := []byte{i}
-	return hex.EncodeToString(bArr)
+	return hex.EncodeToString([]byte{i})
 }
 
 // Init Initialize the logger output and set the verbose flag

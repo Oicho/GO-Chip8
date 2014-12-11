@@ -1,7 +1,7 @@
 package graphics
 
 import (
-	"github.com/nsf/termbox-go"
+	termbox "github.com/nsf/termbox-go"
 )
 
 // PrintString print the given msg starting at the position x and y

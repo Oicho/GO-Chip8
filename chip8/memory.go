@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"github.com/Oicho/GO-Chip8/graphics"
 	"github.com/Oicho/GO-Chip8/myLogger"
-	"github.com/nsf/termbox-go"
+	termbox "github.com/nsf/termbox-go"
 	"os"
 	"strconv"
 	"strings"
