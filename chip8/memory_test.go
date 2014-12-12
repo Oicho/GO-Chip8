@@ -78,14 +78,15 @@ func (suite *MemoryTestSuite) TestLoadRom_Goodfile() {
 }
 
 func (suite *MemoryTestSuite) TestFetch() {
+	// Adapt
 	m := createBasicMem()
 	m.Memory[m.PC] = 0x01
 	m.Memory[m.PC+1] = 0x23
+
+	// Assert
 	assert.Equal(suite.T(), uint16(0x0123), m.Fetch(), "Simple opcode fetching")
 }
 
-// In order for 'go test' to run this suite, we need to create
-// a normal test function and pass our suite to suite.Run
 func TestMemoryTestSuite(t *testing.T) {
 	suite.Run(t, new(MemoryTestSuite))
 }
