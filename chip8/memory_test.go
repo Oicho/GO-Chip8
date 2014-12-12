@@ -1,16 +1,18 @@
 package chip8
 
 import (
+	"github.com/Oicho/GO-Chip8/myLogger"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
-	"github.com/stretchr/testify/suite"
-	"github.com/Oicho/GO-Chip8/myLogger"
 )
+
 type MemoryTestSuite struct {
 	suite.Suite
 }
-func (suite *MemoryTestSuite)SetupTest() {
+
+func (suite *MemoryTestSuite) SetupTest() {
 	myLogger.Init(true)
 }
 
@@ -20,7 +22,7 @@ func createBasicMem() *Memory {
 	return mem
 }
 
-func (suite *MemoryTestSuite)TestInit() {
+func (suite *MemoryTestSuite) TestInit() {
 	// Adapt
 	var mem = &Memory{}
 

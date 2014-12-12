@@ -4,19 +4,20 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/Oicho/GO-Chip8/myLogger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"github.com/Oicho/GO-Chip8/myLogger"
 )
 
 type OpcodeTestSuite struct {
 	suite.Suite
 }
-func (suite *OpcodeTestSuite)SetupTest() {
+
+func (suite *OpcodeTestSuite) SetupTest() {
 	myLogger.Init(true)
 }
 
-func (suite *OpcodeTestSuite)TestClearScreen() {
+func (suite *OpcodeTestSuite) TestClearScreen() {
 	// Adapt
 	m := createBasicMem()
 	m.Screen[0][0] = true
@@ -31,7 +32,7 @@ func (suite *OpcodeTestSuite)TestClearScreen() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Go to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestReturnFromSubRoutine() {
+func (suite *OpcodeTestSuite) TestReturnFromSubRoutine() {
 	// Adapt
 	m := createBasicMem()
 	m.SP = 1
@@ -45,7 +46,7 @@ func (suite *OpcodeTestSuite)TestReturnFromSubRoutine() {
 	assert.Equal(suite.T(), 0, m.SP, "Decrement stack pointer")
 }
 
-func (suite *OpcodeTestSuite)TestRca() {
+func (suite *OpcodeTestSuite) TestRca() {
 	// Adapt
 	m := createBasicMem()
 
@@ -56,7 +57,7 @@ func (suite *OpcodeTestSuite)TestRca() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Go to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test1NNN_OK() {
+func (suite *OpcodeTestSuite) Test1NNN_OK() {
 	// Adapt
 	m := createBasicMem()
 
@@ -67,7 +68,7 @@ func (suite *OpcodeTestSuite)Test1NNN_OK() {
 	assert.Equal(suite.T(), uint16(0x242), m.PC, "PC didn't move")
 }
 
-func (suite *OpcodeTestSuite)Test2NNN_OK() {
+func (suite *OpcodeTestSuite) Test2NNN_OK() {
 	// Adapt
 	m := createBasicMem()
 
@@ -80,7 +81,7 @@ func (suite *OpcodeTestSuite)Test2NNN_OK() {
 	assert.Equal(suite.T(), uint16(0xFFF), m.PC, "PC didn't move")
 }
 
-func (suite *OpcodeTestSuite)Test3XNN_Skip() {
+func (suite *OpcodeTestSuite) Test3XNN_Skip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[5] = 0x42
@@ -92,7 +93,7 @@ func (suite *OpcodeTestSuite)Test3XNN_Skip() {
 	assert.Equal(suite.T(), uint16(0x204), m.PC, "Haven't skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test3XNN_NoSkip() {
+func (suite *OpcodeTestSuite) Test3XNN_NoSkip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[5] = 0x42
@@ -104,7 +105,7 @@ func (suite *OpcodeTestSuite)Test3XNN_NoSkip() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Haven't skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test4XNN_NoSkip() {
+func (suite *OpcodeTestSuite) Test4XNN_NoSkip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[5] = 0x42
@@ -116,7 +117,7 @@ func (suite *OpcodeTestSuite)Test4XNN_NoSkip() {
 	assert.Equal(suite.T(), uint16(0x204), m.PC, "Have skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test4XNN_Skip() {
+func (suite *OpcodeTestSuite) Test4XNN_Skip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[5] = 0x42
@@ -128,7 +129,7 @@ func (suite *OpcodeTestSuite)Test4XNN_Skip() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Haven't skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test5XY0_Skip() {
+func (suite *OpcodeTestSuite) Test5XY0_Skip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x23
@@ -141,7 +142,7 @@ func (suite *OpcodeTestSuite)Test5XY0_Skip() {
 	assert.Equal(suite.T(), uint16(0x204), m.PC, "Haven't skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test5XY0_NoSkip() {
+func (suite *OpcodeTestSuite) Test5XY0_NoSkip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x23
@@ -154,7 +155,7 @@ func (suite *OpcodeTestSuite)Test5XY0_NoSkip() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test6XNN_SimpleSet() {
+func (suite *OpcodeTestSuite) Test6XNN_SimpleSet() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x23
@@ -167,7 +168,7 @@ func (suite *OpcodeTestSuite)Test6XNN_SimpleSet() {
 	assert.Equal(suite.T(), byte(0x42), m.V[2], "Set Register")
 }
 
-func (suite *OpcodeTestSuite)Test6XNN_SameValueSet() {
+func (suite *OpcodeTestSuite) Test6XNN_SameValueSet() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x20
@@ -180,7 +181,7 @@ func (suite *OpcodeTestSuite)Test6XNN_SameValueSet() {
 	assert.Equal(suite.T(), byte(0x20), m.V[2], "Set Register")
 }
 
-func (suite *OpcodeTestSuite)Test7XNN() {
+func (suite *OpcodeTestSuite) Test7XNN() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x00
@@ -193,7 +194,7 @@ func (suite *OpcodeTestSuite)Test7XNN() {
 	assert.Equal(suite.T(), byte(0x30), m.V[2], "Add to Register")
 }
 
-func (suite *OpcodeTestSuite)Test7XNN_Overflow() {
+func (suite *OpcodeTestSuite) Test7XNN_Overflow() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0xFF
@@ -207,7 +208,7 @@ func (suite *OpcodeTestSuite)Test7XNN_Overflow() {
 }
 
 // TODO remove me
-func (suite *OpcodeTestSuite)Test8() {
+func (suite *OpcodeTestSuite) Test8() {
 	// Adapt
 	m := createBasicMem()
 
@@ -218,7 +219,7 @@ func (suite *OpcodeTestSuite)Test8() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test8XY0() {
+func (suite *OpcodeTestSuite) Test8XY0() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x3] = 0x32
@@ -233,7 +234,7 @@ func (suite *OpcodeTestSuite)Test8XY0() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test8XY1_FF() {
+func (suite *OpcodeTestSuite) Test8XY1_FF() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x4] = 0xF0
@@ -248,7 +249,7 @@ func (suite *OpcodeTestSuite)Test8XY1_FF() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test8XY1_0F() {
+func (suite *OpcodeTestSuite) Test8XY1_0F() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x4] = 0x00
@@ -263,7 +264,7 @@ func (suite *OpcodeTestSuite)Test8XY1_0F() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test8XY2_0() {
+func (suite *OpcodeTestSuite) Test8XY2_0() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x2] = 0x0F
@@ -278,7 +279,7 @@ func (suite *OpcodeTestSuite)Test8XY2_0() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test8XY2_0F() {
+func (suite *OpcodeTestSuite) Test8XY2_0F() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x2] = 0x0F
@@ -293,7 +294,7 @@ func (suite *OpcodeTestSuite)Test8XY2_0F() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)Test9XY0_NoSkip() {
+func (suite *OpcodeTestSuite) Test9XY0_NoSkip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x23
@@ -306,7 +307,7 @@ func (suite *OpcodeTestSuite)Test9XY0_NoSkip() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Haven't skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)Test9XY0_Skip() {
+func (suite *OpcodeTestSuite) Test9XY0_Skip() {
 	// Adapt
 	m := createBasicMem()
 	m.V[2] = 0x23
@@ -319,7 +320,7 @@ func (suite *OpcodeTestSuite)Test9XY0_Skip() {
 	assert.Equal(suite.T(), uint16(0x204), m.PC, "Skip the instruction")
 }
 
-func (suite *OpcodeTestSuite)TestANNN() {
+func (suite *OpcodeTestSuite) TestANNN() {
 	// Adapt
 	m := createBasicMem()
 	m.I = 42
@@ -331,7 +332,7 @@ func (suite *OpcodeTestSuite)TestANNN() {
 	assert.Equal(suite.T(), uint16(0x153), m.I, "Set I")
 }
 
-func (suite *OpcodeTestSuite)TestBNNN_with0() {
+func (suite *OpcodeTestSuite) TestBNNN_with0() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0] = 0x30
@@ -343,7 +344,7 @@ func (suite *OpcodeTestSuite)TestBNNN_with0() {
 	assert.Equal(suite.T(), uint16(0x30), m.PC, "Move PC")
 }
 
-func (suite *OpcodeTestSuite)TestBNNN_withV0_0() {
+func (suite *OpcodeTestSuite) TestBNNN_withV0_0() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0] = 0x0
@@ -355,7 +356,7 @@ func (suite *OpcodeTestSuite)TestBNNN_withV0_0() {
 	assert.Equal(suite.T(), uint16(0x100), m.PC, "Move PC")
 }
 
-func (suite *OpcodeTestSuite)TestBNNN_Overflow() {
+func (suite *OpcodeTestSuite) TestBNNN_Overflow() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0] = 0x4
@@ -367,7 +368,7 @@ func (suite *OpcodeTestSuite)TestBNNN_Overflow() {
 	assert.Equal(suite.T(), uint16(0x3), m.PC, "Move PC")
 }
 
-func (suite *OpcodeTestSuite)TestCXNN() {
+func (suite *OpcodeTestSuite) TestCXNN() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0xF] = 0xFF
@@ -380,7 +381,7 @@ func (suite *OpcodeTestSuite)TestCXNN() {
 	assert.Equal(suite.T(), 0, m.V[0xF], "And operator")
 }
 
-func (suite *OpcodeTestSuite)TestDXYNN_noHeight() {
+func (suite *OpcodeTestSuite) TestDXYNN_noHeight() {
 	// Adapt
 	m := createBasicMem()
 
@@ -396,7 +397,7 @@ func (suite *OpcodeTestSuite)TestDXYNN_noHeight() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestDXYNN_emptySprites() {
+func (suite *OpcodeTestSuite) TestDXYNN_emptySprites() {
 	// Adapt
 	m := createBasicMem()
 	// empty memory
@@ -414,7 +415,7 @@ func (suite *OpcodeTestSuite)TestDXYNN_emptySprites() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestENNN() {
+func (suite *OpcodeTestSuite) TestENNN() {
 	// Adapt
 	m := createBasicMem()
 
@@ -425,7 +426,7 @@ func (suite *OpcodeTestSuite)TestENNN() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestFX07() {
+func (suite *OpcodeTestSuite) TestFX07() {
 	// Adapt
 	m := createBasicMem()
 	m.V[3] = 1
@@ -438,7 +439,7 @@ func (suite *OpcodeTestSuite)TestFX07() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestFX15() {
+func (suite *OpcodeTestSuite) TestFX15() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x7] = 0xFF
@@ -451,7 +452,7 @@ func (suite *OpcodeTestSuite)TestFX15() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestFX18() {
+func (suite *OpcodeTestSuite) TestFX18() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x7] = 0xF0
@@ -464,7 +465,7 @@ func (suite *OpcodeTestSuite)TestFX18() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestFX1E() {
+func (suite *OpcodeTestSuite) TestFX1E() {
 	// Adapt
 	m := createBasicMem()
 	m.V[0x7] = 0x30
@@ -478,7 +479,7 @@ func (suite *OpcodeTestSuite)TestFX1E() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
-func (suite *OpcodeTestSuite)TestXyExtractor() {
+func (suite *OpcodeTestSuite) TestXyExtractor() {
 	// Adapt
 	opcode := uint16(0x1234)
 
@@ -490,7 +491,7 @@ func (suite *OpcodeTestSuite)TestXyExtractor() {
 	assert.Equal(suite.T(), 3, y, "Y value")
 }
 
-func (suite *OpcodeTestSuite)TestXyExtractor_0() {
+func (suite *OpcodeTestSuite) TestXyExtractor_0() {
 	// Adapt
 	opcode := uint16(0x0034)
 
