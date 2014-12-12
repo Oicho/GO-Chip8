@@ -1,7 +1,9 @@
 language: go
 go:
   - tip
-before_install:
+install:
   - go get github.com/nsf/termbox-go
+  - go get github.com/stretchr/testify/suite
+  - go get github.com/stretchr/testify/assert
 script:
     - go test -v ./...
