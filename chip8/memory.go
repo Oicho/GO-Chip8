@@ -1,7 +1,6 @@
 package chip8
 
 import (
-	// "fmt"
 	"github.com/Oicho/GO-Chip8/graphics"
 	"github.com/Oicho/GO-Chip8/myLogger"
 	termbox "github.com/nsf/termbox-go"

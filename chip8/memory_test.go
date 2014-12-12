@@ -4,9 +4,23 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"github.com/stretchr/testify/suite"
+	"github.com/Oicho/GO-Chip8/myLogger"
 )
+type MemoryTestSuite struct {
+	suite.Suite
+}
+func (suite *MemoryTestSuite)SetupTest() {
+	myLogger.Init(true)
+}
 
-func TestInit(t *testing.T) {
+func createBasicMem() *Memory {
+	var mem = &Memory{}
+	mem.Init()
+	return mem
+}
+
+func (suite *MemoryTestSuite)TestInit() {
 	// Adapt
 	var mem = &Memory{}
 
@@ -15,19 +29,19 @@ func TestInit(t *testing.T) {
 
 	// Assert
 	for i := 0; i < 80; i++ {
-		assert.Equal(t, chip8Fontset[i], mem.Memory[i], "Fontset is loaded")
+		assert.Equal(suite.T(), chip8Fontset[i], mem.Memory[i], "Fontset is loaded")
 	}
 	for i := range mem.Screen {
 		for j := range mem.Screen[i] {
-			assert.False(t, mem.Screen[i][j], "Screen not clean")
+			assert.False(suite.T(), mem.Screen[i][j], "Screen not clean")
 		}
 	}
-	assert.Equal(t, uint16(0x200), mem.PC, "Pc not set")
-	assert.Equal(t, len(mem.Screen), 64, "Screen width")
-	assert.Equal(t, len(mem.Screen[0]), 32, "Screen height")
+	assert.Equal(suite.T(), uint16(0x200), mem.PC, "Pc not set")
+	assert.Equal(suite.T(), len(mem.Screen), 64, "Screen width")
+	assert.Equal(suite.T(), len(mem.Screen[0]), 32, "Screen height")
 }
 
-func TestLoadRom_BadPath(t *testing.T) {
+func (suite *MemoryTestSuite) TestLoadRom_BadPath() {
 	// Adapt
 	m := createBasicMem()
 
@@ -35,10 +49,10 @@ func TestLoadRom_BadPath(t *testing.T) {
 	err := m.LoadRom("not_found")
 
 	// Assert
-	assert.NotNil(t, err, "Error raised")
+	assert.NotNil(suite.T(), err, "Error raised")
 }
 
-func TestLoadRom_Goodfile(t *testing.T) {
+func (suite *MemoryTestSuite) TestLoadRom_Goodfile() {
 	// Adapt
 	m := createBasicMem()
 
@@ -46,24 +60,30 @@ func TestLoadRom_Goodfile(t *testing.T) {
 	err := m.LoadRom("../rom/TICTAC")
 
 	// Assert
-	assert.Nil(t, err, "Error raised")
+	assert.Nil(suite.T(), err, "Error raised")
 	file, _ := os.Open("../rom/TICTAC")
 	defer file.Close()
 	data := make([]byte, 0xE00)
 	nbBytes, _ := file.Read(data)
 	i := 0
 	for ; i < nbBytes; i++ {
-		assert.Equal(t, data[i], m.Memory[i+0x200], "Should load Rom data")
+		assert.Equal(suite.T(), data[i], m.Memory[i+0x200], "Should load Rom data")
 	}
 	for ; i < 0xE00; i++ {
-		assert.Equal(t, 0, m.Memory[i+0x200], "Should be null")
+		assert.Equal(suite.T(), 0, m.Memory[i+0x200], "Should be null")
 	}
 
 }
 
-func TestFetch(t *testing.T) {
+func (suite *MemoryTestSuite) TestFetch() {
 	m := createBasicMem()
 	m.Memory[m.PC] = 0x01
 	m.Memory[m.PC+1] = 0x23
-	assert.Equal(t, uint16(0x0123), m.Fetch(), "Simple opcode fetching")
+	assert.Equal(suite.T(), uint16(0x0123), m.Fetch(), "Simple opcode fetching")
+}
+
+// In order for 'go test' to run this suite, we need to create
+// a normal test function and pass our suite to suite.Run
+func TestMemoryTestSuite(t *testing.T) {
+	suite.Run(t, new(MemoryTestSuite))
 }
