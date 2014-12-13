@@ -265,7 +265,9 @@ func EDispatcher(m *Memory, opcode uint16) {
 // ESkipIfKeyPress is the EX9E opcode
 // which skip the next instruction if the key stored in VX is pressed
 func ESkipIfKeyPress(m *Memory, opcode uint16) {
-	if m.Key[m.V[(opcode&0x0F00)>>8]] {
+	b, k := CheckInputs(m)
+
+	if b && k == m.V[(opcode&0x0F00)>>8] {
 		m.PC += 2
 	}
 }
@@ -273,7 +275,9 @@ func ESkipIfKeyPress(m *Memory, opcode uint16) {
 // ESkipIfKeyNotPress is the EXA1 opcode
 // which skip the next instruction if the key stored in VX is not pressed
 func ESkipIfKeyNotPress(m *Memory, opcode uint16) {
-	if !m.Key[m.V[(opcode&0x0F00)>>8]] {
+	b, k := CheckInputs(m)
+
+	if !b || k != m.V[(opcode&0x0F00)>>8] {
 		m.PC += 2
 	}
 }
@@ -293,7 +297,7 @@ func FSetVXtoDelayTimer(m *Memory, opcode uint16) {
 // FWaitKeyPress is the FX0A opcode
 // which wait a key press and then stores it in VX
 func FWaitKeyPress(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>8] = m.WaitForInput()
+	m.V[(opcode&0x0F00)>>8] = WaitForInput(m)
 }
 
 // FSetDelayTimerToVX is the FX15 opcode

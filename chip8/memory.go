@@ -101,9 +101,9 @@ func (m *Memory) Iterate() {
 }
 
 // WaitForInput wait for an input and then returns it
-func (m *Memory) WaitForInput() byte {
+func WaitForInput(m *Memory) byte {
 	for {
-		b, i := m.CheckInputs()
+		b, i := CheckInputs(m)
 		if b {
 			return i
 		}
@@ -113,7 +113,7 @@ func (m *Memory) WaitForInput() byte {
 
 // CheckInputs verify if there is a key pressed
 // and then set the Key  array accordingly
-func (m *Memory) CheckInputs() (bool, byte) {
+var CheckInputs = func (m *Memory) (bool, byte) {
 	for i := range m.Key {
 		m.Key[i] = false
 	}

@@ -13,8 +13,10 @@ type OpcodeTestSuite struct {
 	suite.Suite
 }
 
+var MockCheckInputs = CheckInputs
 func (suite *OpcodeTestSuite) SetupTest() {
 	myLogger.Init(true)
+	CheckInputs = MockCheckInputs
 }
 
 func (suite *OpcodeTestSuite) TestClearScreen() {
@@ -424,6 +426,92 @@ func (suite *OpcodeTestSuite) TestENNN() {
 
 	// Assert
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestEX9E_Good_Key_pressed_then_Skip() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return true, 4
+	}
+
+	// Act
+	m.V[0xB] = 4
+	m.Decode(0xEB9E)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x204), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestEX9E_No_Key_Pressed_then_no_skip() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return false, 4
+	}
+
+	// Act
+	m.V[0xB] = 4
+	m.Decode(0xEB9E)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Go to the next instruction")
+}
+func (suite *OpcodeTestSuite) TestEX9E_Different_Key_Pressed_then_no_skip() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return true, 4
+	}
+
+	// Act
+	m.V[0xB] = 5
+	m.Decode(0xEB9E)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Go to the next instruction")
+}
+func (suite *OpcodeTestSuite) TestEXA1_No_Key_Pressed_then_skip() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return false, 0
+	}
+
+	// Act
+	m.V[0xB] = 5
+	m.Decode(0xEBA1)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x204), m.PC, "Skip the next instruction")
+}
+func (suite *OpcodeTestSuite) TestEXA1_Different_Key_Pressed_then_skip() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return true, 1
+	}
+
+	// Act
+	m.V[0xB] = 5
+	m.Decode(0xEBA1)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x204), m.PC, "Skip the next instruction")
+}
+func (suite *OpcodeTestSuite) TestEXA1_Good_Key_Pressed_then_no_skip() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return true, 1
+	}
+
+	// Act
+	m.V[0xB] = 5
+	m.Decode(0xEBA1)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x204), m.PC, "Skip the next instruction")
 }
 
 func (suite *OpcodeTestSuite) TestFX07() {
