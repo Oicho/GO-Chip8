@@ -84,10 +84,11 @@ func ByteToString(i byte) string {
 	return hex.EncodeToString([]byte{i})
 }
 
+var logpath = os.Getenv("GOPATH") + "/src/github.com/Oicho/GO-Chip8/log/GO-Chip8.out"
+
 // Init Initialize the logger output and set the verbose flag
 func Init(b bool) error {
 	verbose = b
-	var logpath = os.Getenv("GOPATH") + "/src/github.com/Oicho/GO-Chip8/log/GO-Chip8.out"
 	f, err := os.OpenFile(logpath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("log Failed")
