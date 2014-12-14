@@ -14,6 +14,7 @@ type OpcodeTestSuite struct {
 }
 
 var MockCheckInputs = CheckInputs
+
 func (suite *OpcodeTestSuite) SetupTest() {
 	myLogger.Init(true)
 	CheckInputs = MockCheckInputs
@@ -296,6 +297,22 @@ func (suite *OpcodeTestSuite) Test8XY2_0F() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
+func (suite *OpcodeTestSuite) Test8XY3_00() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0x2] = 0xFF
+	m.V[0x3] = 0xFF
+
+	// Act
+	m.Decode(0x8233)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x00), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(0xFF), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+
 func (suite *OpcodeTestSuite) Test9XY0_NoSkip() {
 	// Adapt
 	m := createBasicMem()
@@ -525,6 +542,24 @@ func (suite *OpcodeTestSuite) TestFX07() {
 	// Assert
 	assert.Equal(suite.T(), m.DelayTimer, m.V[3], "Set VX to delay timer")
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFX0A() {
+	// Adapt
+	m := createBasicMem()
+	CheckInputs = func (m *Memory) (bool, byte){
+		return true, 4
+	}
+	// Act
+	m.Decode(0xF10A)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+	assert.Equal(suite.T(), 0, m.V[0], "Register not set")
+	assert.Equal(suite.T(), 4, m.V[1], "Register set")
+	for i := 2; i < 0x10; i++ {
+		assert.Equal(suite.T(), 0, m.V[i], "Register not set")
+	}
 }
 
 func (suite *OpcodeTestSuite) TestFX15() {

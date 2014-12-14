@@ -53,6 +53,16 @@ func (suite *MemoryTestSuite) TestLoadRom_BadPath() {
 	// Assert
 	assert.NotNil(suite.T(), err, "Error raised")
 }
+func (suite *MemoryTestSuite) TestLoadRom_BadFile() {
+	// Adapt
+	m := createBasicMem()
+	s := os.Getenv("GOPATH") + "/src/github.com/Oicho/GO-Chip8/test/TestLog.log"
+	// Act
+	err := m.LoadRom(s)
+
+	// Assert
+	assert.NotNil(suite.T(), err, "Error raised")
+}
 
 func (suite *MemoryTestSuite) TestLoadRom_Goodfile() {
 	// Adapt

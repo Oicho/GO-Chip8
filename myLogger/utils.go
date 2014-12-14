@@ -91,7 +91,7 @@ func Init(b bool) error {
 	verbose = b
 	f, err := os.OpenFile(logpath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println("log Failed")
+		fmt.Println("Log INIT Failed")
 		return err
 	}
 	Trace = log.New(f,
