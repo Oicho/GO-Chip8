@@ -153,7 +153,7 @@ func EightFourAdd(m *Memory, opcode uint16) {
 // which set VX to VX-VY
 func EightFiveSub(m *Memory, opcode uint16) {
 	x, y := xyExtractor(opcode)
-	if m.V[x] > m.V[y] {
+	if m.V[x] < m.V[y] {
 		m.V[0xF] = 1
 	} else {
 		m.V[0xF] = 0
@@ -173,7 +173,7 @@ func EightSixRightShift(m *Memory, opcode uint16) {
 // which set VX to VY-VX
 func EightSevenMinus(m *Memory, opcode uint16) {
 	x, y := xyExtractor(opcode)
-	if m.V[y] > m.V[x] {
+	if m.V[x] > m.V[y] {
 		m.V[0xF] = 1
 	} else {
 		m.V[0xF] = 0

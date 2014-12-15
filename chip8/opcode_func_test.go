@@ -312,6 +312,95 @@ func (suite *OpcodeTestSuite) Test8XY3_00() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
+func (suite *OpcodeTestSuite) Test8XY4_Simple_add() {
+	// Adapt
+	m := createBasicMem()
+	m.V[2] = 0x3
+	m.V[3] = 0x2
+	// Act
+	m.Decode(0x8234)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(5), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(2), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY4_Overflow() {
+	// Adapt
+	m := createBasicMem()
+	m.V[2] = 0xFF
+	m.V[3] = 0x2
+	// Act
+	m.Decode(0x8234)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(1), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(2), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "Carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY5_Simple_sub() {
+	// Adapt
+	m := createBasicMem()
+	m.V[2] = 0x5
+	m.V[3] = 0x2
+	// Act
+	m.Decode(0x8235)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(3), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(2), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY5_Overflow() {
+	// Adapt
+	m := createBasicMem()
+	m.V[2] = 0x5
+	m.V[3] = 0x7
+	// Act
+	m.Decode(0x8235)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0xFE), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(7), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY7_Simple_sub() {
+	// Adapt
+	m := createBasicMem()
+	m.V[2] = 5
+	m.V[3] = 10
+	// Act
+	m.Decode(0x8237)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(5), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(10), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY7_Overflow() {
+	// Adapt
+	m := createBasicMem()
+	m.V[2] = 10
+	m.V[3] = 4
+	// Act
+	m.Decode(0x8237)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0xFA), m.V[0x2], "Changed VX")
+	assert.Equal(suite.T(), uint16(4), m.V[0x3], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
 
 func (suite *OpcodeTestSuite) Test9XY0_NoSkip() {
 	// Adapt
