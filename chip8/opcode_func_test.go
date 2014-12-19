@@ -634,6 +634,47 @@ func (suite *OpcodeTestSuite) TestDXYNN_emptySprites() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
+func (suite *OpcodeTestSuite) TestDXYNN_font() {
+	// Adapt
+	m := createBasicMem()
+	// empty memory
+	m.I = 0x0
+
+	// Act
+	m.Decode(0xD23F)
+
+	//	Assert
+	res := false
+	for _, superArr := range m.Screen {
+		for _, b := range superArr {
+			res = b || res
+		}
+	}
+	assert.True(suite.T(), res, "At least one print")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestDXYNN_flag() {
+	// Adapt
+	m := createBasicMem()
+	// empty memory
+	m.I = 0x0
+	for x, superArr := range m.Screen {
+		for y, _:= range superArr {
+
+			m.Screen[x][y] = true
+		}
+	}
+
+
+	// Act
+	m.Decode(0xD23F)
+
+	//	Assert
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "Flag raised")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
 func (suite *OpcodeTestSuite) TestENNN() {
 	// Adapt
 	m := createBasicMem()
