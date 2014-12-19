@@ -21,9 +21,17 @@ func main() {
 	mem.Init()
 
 	err := termbox.Init()
-	romPath := os.Args[1]
+	var romPath string
+	var pause bool
+
+	if (len(os.Args) == 3) {
+		pause = true
+		romPath = os.Args[2]
+	} else {
+		pause = false
+		romPath = os.Args[1]
+	}
 	mem.LoadRom(romPath)
-	pause := false
 	if err != nil {
 		panic(err)
 	}

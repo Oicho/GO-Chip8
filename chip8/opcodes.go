@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/Oicho/GO-Chip8/graphics"
+	"github.com/Oicho/GO-Chip8/myLogger"
 )
 
 var mainFunctionArray = [0x10]func(*Memory, uint16){ZeroDispatcher, OneJumpTo, TwoCallSubRoutine, ThreeEqSkip, FourNeqSkip, FiveEqSkip, SixSetRegister, SevenAddToRegister, EightDispatcher, NineNeqSkip, ASetAddressRegister, BJumpToV0, CSetToRandomNumber, DWrapsOnScreen, EDispatcher, FDispatcher}
@@ -46,6 +47,7 @@ func ZeroReturnFromSubRoutine(m *Memory, opcode uint16) {
 // OneJumpTo is the 1NNN opcode which jump to the NNN address
 func OneJumpTo(m *Memory, opcode uint16) {
 	m.PC = opcode & 0x0FFF
+	myLogger.InfoPrint(myLogger.Uint16ToString(m.PC) + ": Jumping to 0x" + myLogger.Uint16ToString(m.PC))
 }
 
 // TwoCallSubRoutine is the 2NNN opcode
@@ -134,7 +136,10 @@ func EightTwoANDSet(m *Memory, opcode uint16) {
 // EightThreeXORSet is the 8XY3 opcode
 // which sets VX to VX XOR VY
 func EightThreeXORSet(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>8] = m.V[(opcode&0x0F00)>>8] ^ m.V[(opcode&0x00F0)>>4]
+	x, y := xyExtractor(opcode)
+	m.V[x] = m.V[x] ^ m.V[y]
+	sx, sy, sOpcode:= convVar(opcode, x, y)
+	myLogger.InfoPrint(sOpcode + ": V[0x" + sx + "] XOR V[0x" + sy+ "] = " + myLogger.ByteToString(m.V[x]))
 }
 
 // EightFourAdd is the 8XY4 opcode
@@ -208,6 +213,9 @@ func NineNeqSkip(m *Memory, opcode uint16) {
 func ASetAddressRegister(m *Memory, opcode uint16) {
 	m.I = opcode & 0x0FFF
 	m.PC += 2
+	sOpcode := myLogger.Uint16ToString(opcode)
+	sI := myLogger.Uint16ToString(m.I)
+	myLogger.InfoPrint(sOpcode + ": set I = " + sI)
 }
 
 // BJumpToV0 is the BNNN opcode
@@ -358,4 +366,11 @@ func xyExtractor(opcode uint16) (x uint16, y uint16) {
 	x = (opcode & 0x0F00) >> 8
 	y = (opcode & 0x00F0) >> 4
 	return
+}
+
+func convVar(PC uint16, x uint16, y uint16) (string, string, string){
+	sx := myLogger.Uint16ToString(x)
+	sy := myLogger.Uint16ToString(y)
+	sPC := myLogger.Uint16ToString(PC)
+	return sx, sy, sPC
 }

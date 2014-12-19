@@ -94,9 +94,9 @@ func (m *Memory) Decode(opcode uint16) {
 
 // Iterate does one cycle of a chip8
 func (m *Memory) Iterate() {
-	myLogger.InfoVerbosePrint("Fetching at " + myLogger.Uint16ToString(m.PC))
+	myLogger.InfoVerbosePrint("Fetching at 0x" + myLogger.Uint16ToString(m.PC))
 	opcode := m.Fetch()
-	myLogger.Info.Println("Executing ", myLogger.Uint16ToString(opcode))
+	myLogger.InfoVerbosePrint("Executing 0x"+ myLogger.Uint16ToString(opcode))
 	m.Decode(opcode)
 }
 
