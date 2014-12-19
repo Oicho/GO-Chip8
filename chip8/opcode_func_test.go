@@ -372,6 +372,62 @@ func (suite *OpcodeTestSuite) Test8XY5_Overflow() {
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
+func (suite *OpcodeTestSuite) Test8XY6_no_flag() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xE] = 2
+
+	// Act
+	m.Decode(0x8EE6)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(1), m.V[0xE], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY6_flag() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xE] = 9
+
+	// Act
+	m.Decode(0x8EE6)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(4), m.V[0xE], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY6_different_XY() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xE] = 9
+
+	// Act
+	m.Decode(0x8EA6)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(4), m.V[0xE], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XY6_zero() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xE] = 1
+
+	// Act
+	m.Decode(0x8EE6)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0), m.V[0xE], "Unchanged VY")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
 func (suite *OpcodeTestSuite) Test8XY7_Simple_sub() {
 	// Adapt
 	m := createBasicMem()
@@ -399,6 +455,61 @@ func (suite *OpcodeTestSuite) Test8XY7_Overflow() {
 	assert.Equal(suite.T(), uint16(0xFA), m.V[0x2], "Changed VX")
 	assert.Equal(suite.T(), uint16(4), m.V[0x3], "Unchanged VY")
 	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XYE_no_flag() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xA] = 3
+
+	// Act
+	m.Decode(0x8AAE)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(6), m.V[0xA], "Changed VX")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+func (suite *OpcodeTestSuite) Test8XYE_different_XY() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xA] = 3
+
+	// Act
+	m.Decode(0x8ACE)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(6), m.V[0xA], "Changed VX")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XYE_flag() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xA] = 0xC0
+
+	// Act
+	m.Decode(0x8AAE)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x80), m.V[0xA], "Changed VX")
+	assert.Equal(suite.T(), uint16(1), m.V[0xF], "No carry flag")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) Test8XYE_zero() {
+	// Adapt
+	m := createBasicMem()
+	m.V[0xA] = 0
+
+	// Act
+	m.Decode(0x8AAE)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x0), m.V[0xA], "Changed VX")
+	assert.Equal(suite.T(), uint16(0), m.V[0xF], "No carry flag")
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
@@ -688,6 +799,219 @@ func (suite *OpcodeTestSuite) TestFX1E() {
 
 	// Assert
 	assert.Equal(suite.T(), uint16(0x33), m.I, "I operator sets")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFX29() {
+	// Adapt
+	m := createBasicMem()
+	m.V[3] = 2
+
+	// Act
+	m.Decode(0xF329)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(10), m.I, "I operator sets")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFX33_123() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	m.V[3] = 123
+
+	// Act
+	m.Decode(0xF333)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(1), m.Memory[0x300], "X?? value")
+	assert.Equal(suite.T(), uint16(2), m.Memory[0x301], "?X? value")
+	assert.Equal(suite.T(), uint16(3), m.Memory[0x302], "??X value")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+
+}
+
+func (suite *OpcodeTestSuite) TestFX33_003() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	m.V[3] = 3
+
+	// Act
+	m.Decode(0xF333)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0), m.Memory[0x300], "X?? value")
+	assert.Equal(suite.T(), uint16(0), m.Memory[0x301], "?X? value")
+	assert.Equal(suite.T(), uint16(3), m.Memory[0x302], "??X value")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+func (suite *OpcodeTestSuite) TestFX33_000() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	m.V[3] = 0
+
+	// Act
+	m.Decode(0xF333)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0), m.Memory[0x300], "X?? value")
+	assert.Equal(suite.T(), uint16(0), m.Memory[0x301], "?X? value")
+	assert.Equal(suite.T(), uint16(0), m.Memory[0x302], "??X value")
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFF55() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	m.V[0x0] = 0x1
+	m.V[0x1] = 0x2
+	m.V[0x2] = 0x3
+	m.V[0x3] = 0x4
+	m.V[0x4] = 0x5
+	m.V[0x5] = 0x6
+	m.V[0x6] = 0x7
+	m.V[0x7] = 0x8
+	m.V[0x8] = 0x9
+	m.V[0x9] = 0xA
+	m.V[0xA] = 0xB
+	m.V[0xB] = 0xC
+	m.V[0xC] = 0xD
+	m.V[0xD] = 0xE
+	m.V[0xE] = 0xF
+	m.V[0xF] = 0x10
+
+	// Act
+	m.Decode(0xFF55)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x1), m.Memory[0x300], "V[] set")
+	assert.Equal(suite.T(), uint16(0x2), m.Memory[0x301], "V[] set")
+	assert.Equal(suite.T(), uint16(0x3), m.Memory[0x302], "V[] set")
+	assert.Equal(suite.T(), uint16(0x4), m.Memory[0x303], "V[] set")
+	assert.Equal(suite.T(), uint16(0x5), m.Memory[0x304], "V[] set")
+	assert.Equal(suite.T(), uint16(0x6), m.Memory[0x305], "V[] set")
+	assert.Equal(suite.T(), uint16(0x7), m.Memory[0x306], "V[] set")
+	assert.Equal(suite.T(), uint16(0x8), m.Memory[0x307], "V[] set")
+	assert.Equal(suite.T(), uint16(0x9), m.Memory[0x308], "V[] set")
+	assert.Equal(suite.T(), uint16(0xA), m.Memory[0x309], "V[] set")
+	assert.Equal(suite.T(), uint16(0xB), m.Memory[0x30A], "V[] set")
+	assert.Equal(suite.T(), uint16(0xC), m.Memory[0x30B], "V[] set")
+	assert.Equal(suite.T(), uint16(0xD), m.Memory[0x30C], "V[] set")
+	assert.Equal(suite.T(), uint16(0xE), m.Memory[0x30D], "V[] set")
+	assert.Equal(suite.T(), uint16(0xF), m.Memory[0x30E], "V[] set")
+	assert.Equal(suite.T(), uint16(0x10), m.Memory[0x30F], "V[] set")
+
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestF055() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	m.V[0x0] = 0x1
+	m.V[0x1] = 0x2
+	m.V[0x2] = 0x3
+	m.V[0x3] = 0x4
+	m.V[0x4] = 0x5
+	m.V[0x5] = 0x6
+	m.V[0x6] = 0x7
+	m.V[0x7] = 0x8
+	m.V[0x8] = 0x9
+	m.V[0x9] = 0xA
+	m.V[0xA] = 0xB
+	m.V[0xB] = 0xC
+	m.V[0xC] = 0xD
+	m.V[0xD] = 0xE
+	m.V[0xE] = 0xF
+	m.V[0xF] = 0x10
+
+	// Act
+	m.Decode(0xF055)
+
+	// Assert
+	assert.Equal(suite.T(), uint16(0x1), m.Memory[0x300], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x301], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x302], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x303], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x304], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x305], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x306], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x307], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x308], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x309], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x30A], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x30B], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x30C], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x30D], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x30E], "V[] set")
+	assert.Equal(suite.T(), uint16(0x0), m.Memory[0x30F], "V[] set")
+
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFF65_empty_memory() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+
+	// Act
+	m.Decode(0xFF65)
+
+	// Assert
+	for i := 0; i < 0x10; i++{
+		assert.Equal(suite.T(), uint16(0x00), m.V[i], "V[0x" + myLogger.ByteToString(byte(i)) + "] not set")
+	}
+
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFF65() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	var val byte = 0
+	for i := 0x300; i < 0x410; i++ {
+		m.Memory[i] = val
+		val++
+	}
+
+	// Act
+	m.Decode(0xFF65)
+
+	// Assert
+	val = 0
+	for i := 0; i < 0x10; i++{
+		assert.Equal(suite.T(), uint16(val), m.V[i], "V[0x" + myLogger.ByteToString(byte(i)) + "] not set")
+		val ++
+	}
+
+	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
+}
+
+func (suite *OpcodeTestSuite) TestFB65() {
+	// Adapt
+	m := createBasicMem()
+	m.I = 0x300
+	var val byte = 0
+	for i := 0x300; i < 0x410; i++ {
+		m.Memory[i] = val
+		val++
+	}
+
+	// Act
+	m.Decode(0xFB65)
+
+	// Assert
+	val = 0
+	for i := 0; i < 0xC; i++{
+		assert.Equal(suite.T(), uint16(val), m.V[i], "V[0x" + myLogger.ByteToString(byte(i)) + "] not set")
+		val ++
+	}
+
 	assert.Equal(suite.T(), uint16(0x202), m.PC, "Move to the next instruction")
 }
 
