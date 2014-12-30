@@ -47,7 +47,7 @@ func ZeroReturnFromSubRoutine(m *Memory, opcode uint16) {
 // OneJumpTo is the 1NNN opcode which jump to the NNN address
 func OneJumpTo(m *Memory, opcode uint16) {
 	m.PC = opcode & 0x0FFF
-	myLogger.InfoPrint(myLogger.Uint16ToString(m.PC) + ": Jumping to 0x" + myLogger.Uint16ToString(m.PC))
+	myLogger.Info.Println(myLogger.Uint16ToString(m.PC) + ": Jumping to 0x" + myLogger.Uint16ToString(m.PC))
 }
 
 // TwoCallSubRoutine is the 2NNN opcode
@@ -55,6 +55,7 @@ func OneJumpTo(m *Memory, opcode uint16) {
 func TwoCallSubRoutine(m *Memory, opcode uint16) {
 	m.CallStack[m.SP] = m.PC
 	m.SP++
+	myLogger.Info.Println(myLogger.Uint16ToString(m.PC) + ": Calling sub to 0x" + myLogger.Uint16ToString(opcode & 0x0FFF))
 	m.PC = opcode & 0x0FFF
 }
 
@@ -95,7 +96,10 @@ func FiveEqSkip(m *Memory, opcode uint16) {
 // SixSetRegister is the 6XNN opcode
 // which set VX to NN
 func SixSetRegister(m *Memory, opcode uint16) {
-	m.V[(opcode&0x0F00)>>8] = byte(opcode & 0x00FF)
+	x :=byte((opcode&0x0F00)>>8)
+	value := byte(opcode & 0x00FF)
+	m.V[x] = value
+	myLogger.Info.Println(myLogger.Uint16ToString(m.PC) + ": V[0x"+ myLogger.ByteToString(x) +"] = " + myLogger.ByteToString(value))
 	m.PC += 2
 }
 
@@ -139,7 +143,7 @@ func EightThreeXORSet(m *Memory, opcode uint16) {
 	x, y := xyExtractor(opcode)
 	m.V[x] = m.V[x] ^ m.V[y]
 	sx, sy, sOpcode:= convVar(opcode, x, y)
-	myLogger.InfoPrint(sOpcode + ": V[0x" + sx + "] XOR V[0x" + sy+ "] = " + myLogger.ByteToString(m.V[x]))
+	myLogger.Info.Println(sOpcode + ": V[0x" + sx + "] XOR V[0x" + sy+ "] = " + myLogger.ByteToString(m.V[x]))
 }
 
 // EightFourAdd is the 8XY4 opcode
@@ -215,7 +219,7 @@ func ASetAddressRegister(m *Memory, opcode uint16) {
 	m.PC += 2
 	sOpcode := myLogger.Uint16ToString(opcode)
 	sI := myLogger.Uint16ToString(m.I)
-	myLogger.InfoPrint(sOpcode + ": set I = " + sI)
+	myLogger.Info.Println(sOpcode + ": set I = " + sI)
 }
 
 // BJumpToV0 is the BNNN opcode
@@ -324,6 +328,9 @@ func FSetSoundTimerToVX(m *Memory, opcode uint16) {
 // which adds VX to I
 func FAddVXToI(m *Memory, opcode uint16) {
 	m.I += uint16(m.V[(opcode&0x0F00)>>8])
+	sPC, val, sI := convVar(m.PC, uint16(m.V[(opcode&0x0F00)>>8]), m.I)
+	myLogger.Info.Println(sPC + ": adding "+ val +" to  I = "+ sI)
+
 }
 
 // FGoToSprite is the FX29 opcode

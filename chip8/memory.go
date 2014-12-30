@@ -53,7 +53,7 @@ func (m *Memory) Init() {
 	for i := range m.Screen {
 		m.Screen[i] = make([]bool, 32)
 	}
-	myLogger.InfoPrint("Finished init chip8")
+	myLogger.Info.Print("Finished init chip8")
 }
 
 // LoadRom load a rom in the memory
@@ -61,7 +61,7 @@ func (m *Memory) LoadRom(filePath string) error {
 	myLogger.InfoPrint("Loading a ROM")
 	file, err := os.Open(filePath)
 	if err != nil {
-		myLogger.ErrorPrint("file:<" + filePath + "> not found")
+		myLogger.Error.Println("file:<" + filePath + "> not found")
 		return err
 	}
 
@@ -70,13 +70,13 @@ func (m *Memory) LoadRom(filePath string) error {
 	nbBytes, err := file.Read(data)
 
 	if err != nil {
-		myLogger.ErrorPrint("Couldn't read the file")
+		myLogger.Error.Println("Couldn't read the file")
 		return err
 	}
 	for i := 0; i < nbBytes; i++ {
 		m.Memory[i+0x200] = data[i]
 	}
-	myLogger.InfoPrint("ROM loading done")
+	myLogger.Info.Println("ROM loading done")
 	return nil
 }
 

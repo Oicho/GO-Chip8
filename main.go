@@ -61,9 +61,8 @@ loop:
 				}
 				switch str {
 				case "s":
-					myLogger.WarningPrint("Now in step by step mode")
-					mem.Iterate()
 					mem.PrintMemoryValues()
+					mem.Iterate()
 					termbox.Flush()
 					break
 				case "a":
@@ -81,8 +80,8 @@ loop:
 			}
 		default:
 			if !pause {
-				mem.Iterate()
 				mem.PrintMemoryValues()
+				mem.Iterate()
 				termbox.Flush()
 				time.Sleep(10 * time.Millisecond)
 			}
